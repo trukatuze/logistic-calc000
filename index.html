@@ -13,7 +13,7 @@
         .status { font-size: 11px; text-align: center; margin-bottom: 20px; padding: 6px; border-radius: 6px; background: #e2e8f0; color: #64748b; }
         .status.success { background: #dcfce7; color: #166534; }
         label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--dark); margin-bottom: 3px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; margin-bottom: 12px; box-sizing: border-box; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 16px; margin-bottom: 12px; box-sizing: border-box; outline: none; }
         .results { background: var(--light); border-radius: 12px; padding: 15px; margin-top: 15px; border: 1px solid #e2e8f0; }
         .line { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.85rem; }
         .orange-line { color: var(--orange); font-weight: 700; background: #fff7ed; margin: 0 -15px; padding: 8px 15px; border-top: 1px dashed #fed7aa; }
@@ -21,6 +21,19 @@
         .footer-info { text-align: center; margin-top: 15px; font-size: 0.75rem; color: var(--gray); line-height: 1.5; }
         .badge { float: right; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; color: white; display: none; }
         .bg-c { background: var(--blue); } .bg-i { background: #ef4444; }
+
+        /* СТИЛІ ДЛЯ НОВОГО ВИПАДАЮЧОГО МЕНЮ */
+        .search-container { position: relative; margin-bottom: 12px; }
+        .search-container input { margin-bottom: 0; } /* Прибираємо відступ, бо він на контейнері */
+        .results-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0; background: white;
+            border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 8px 8px;
+            max-height: 220px; overflow-y: auto; z-index: 1000; display: none;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        .result-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-size: 0.95rem; color: var(--dark); }
+        .result-item:active, .result-item:hover { background: #f1f5f9; }
+        .result-item:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
@@ -31,8 +44,13 @@
         <div><label>Тип авто</label><select id="type" onchange="calc()"><option value="Car">Sedan</option><option value="SUV">SUV</option><option value="Pickup">Pickup</option><option value="Motorcycle">Moto</option></select></div>
         <div><label>Рік випуску</label><input type="number" id="year" value="2020" oninput="calc()"></div>
     </div>
+    
     <label>Локація <span id="aucBadge" class="badge"></span></label>
-    <input type="text" id="city" list="locList" placeholder="Почніть вводити..." oninput="handleLoc()"><datalist id="locList"></datalist>
+    <div class="search-container">
+        <input type="text" id="city" placeholder="Почніть вводити..." autocomplete="off">
+        <div id="locList" class="results-dropdown"></div>
+    </div>
+
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <div><label id="volLabel">Двигун (см³)</label><input type="number" id="vol" value="2000" oninput="calc()"></div>
         <div><label>Пальне</label><select id="fuel" onchange="updateFuelLabel(); calc()"><option value="petrol">Бензин</option><option value="diesel">Дизель</option><option value="hybrid">Гібрид</option><option value="electric">Електро</option></select></div>
@@ -71,12 +89,52 @@
     }
 
     window.onload = () => {
-        const list = document.getElementById('locList');
         if (typeof db === 'undefined') { document.getElementById('dbStatus').innerText = "❌ База не знайдена"; return; }
         const keys = [...Object.keys(db.copart), ...Object.keys(db.iaai)].sort();
-        keys.forEach(k => { let o = document.createElement('option'); o.value = k; list.appendChild(o); });
         document.getElementById('dbStatus').innerText = "✅ База активна: " + keys.length + " локацій";
         document.getElementById('dbStatus').classList.add('success');
+
+        // ЛОГІКА НОВОГО ВИПАДАЮЧОГО МЕНЮ
+        const cityInput = document.getElementById('city');
+        const locDropdown = document.getElementById('locList');
+
+        cityInput.addEventListener('input', function() {
+            const query = this.value.toUpperCase();
+            locDropdown.innerHTML = '';
+            
+            if (query.length < 1) {
+                locDropdown.style.display = 'none';
+                return;
+            }
+
+            // Шукаємо співпадіння і обмежуємо до 20 результатів для швидкості
+            const filtered = keys.filter(k => k.toUpperCase().includes(query)).slice(0, 20);
+
+            if (filtered.length > 0) {
+                filtered.forEach(loc => {
+                    const div = document.createElement('div');
+                    div.className = 'result-item';
+                    div.textContent = loc;
+                    div.onclick = () => {
+                        cityInput.value = loc;
+                        locDropdown.style.display = 'none';
+                        cityInput.blur(); // Ховаємо клавіатуру на телефоні
+                        handleLoc(); // Викликаємо твою оригінальну функцію
+                    };
+                    locDropdown.appendChild(div);
+                });
+                locDropdown.style.display = 'block';
+            } else {
+                locDropdown.style.display = 'none';
+            }
+        });
+
+        // Закриваємо меню, якщо користувач тапнув поза ним
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                locDropdown.style.display = 'none';
+            }
+        });
     }
 
     function handleLoc() {
@@ -111,8 +169,8 @@
         fee += 300; 
         if (db.iaai[city]) fee += 20;
 
-        // SWIFT: (Лот + Збір + Суша + Море) * 2.5% + 35$
-        const sw = ((bid + fee + land + sea) * 0.025 + 35);
+        // SWIFT: (Лот + Збір + Суша + Море) * 2.5% + 70$
+        const sw = ((bid + fee + land + sea) * 0.025 + 70);
 
         const fuel = document.getElementById('fuel').value;
         const yr = parseInt(document.getElementById('year').value) || 2026;
@@ -123,11 +181,10 @@
         let dty = 0, exc = 0, vt = 0, electricFee = 0;
 
         if (fuel === 'electric') {
-            // Електромобіль з 2026 року: Мито 0%, ПДВ 20%, Акциз 1 євро за кВт + $200 фікс
             dty = 0;
-            exc = vol * 1.08; // 1 євро (курс 1.08) за кВт
-            vt = (cBasis + exc) * 0.20; // ПДВ 20% від вартості з акцизом
-            electricFee = 200; // Додаткові $200 до результату
+            exc = vol * 1.08; 
+            vt = (cBasis + exc) * 0.20; 
+            electricFee = 200; 
         } else if (t === 'Motorcycle') {
             dty = cBasis * 0.10;
             let motoRate = 0.447;
@@ -162,7 +219,6 @@
         document.getElementById('pIn').innerText = loc.port;
         document.getElementById('pOut').innerText = s.end;
         
-        // Фінальна сума з урахуванням electricFee ($200 для електро)
         const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee;
         document.getElementById('resTotal').innerText = f(finalTotal);
     }
