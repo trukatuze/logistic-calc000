@@ -3,60 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistic Pro | Калькулятор</title>
+    <title>EM SHIPPING | Logistic Calculator</title>
     <script src="full_db.js"></script>
     <style>
-        :root { --blue: #2563eb; --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --orange: #f97316; }
-        body { font-family: -apple-system, sans-serif; background: #e2e8f0; display: flex; justify-content: center; padding: 20px 10px; margin: 0; }
-        .card { background: white; width: 100%; max-width: 450px; border-radius: 16px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: var(--blue); margin: 0 0 15px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .status { font-size: 11px; text-align: center; margin-bottom: 20px; padding: 6px; border-radius: 6px; background: #e2e8f0; color: #64748b; }
-        .status.success { background: #dcfce7; color: #166534; }
-        label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--dark); margin-bottom: 3px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 16px; margin-bottom: 12px; box-sizing: border-box; outline: none; }
-        .results { background: var(--light); border-radius: 12px; padding: 15px; margin-top: 15px; border: 1px solid #e2e8f0; }
-        .line { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.85rem; }
-        .orange-line { color: var(--orange); font-weight: 700; background: #fff7ed; margin: 0 -15px; padding: 8px 15px; border-top: 1px dashed #fed7aa; }
-        .total { background: var(--dark); color: white; padding: 15px; border-radius: 10px; margin-top: 15px; display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; }
-        .footer-info { text-align: center; margin-top: 15px; font-size: 0.75rem; color: var(--gray); line-height: 1.5; }
-        .badge { float: right; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; color: white; display: none; }
-        .bg-c { background: var(--blue); } .bg-i { background: #ef4444; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
 
-        /* СТИЛІ ДЛЯ НОВОГО ВИПАДАЮЧОГО МЕНЮ */
-        .search-container { position: relative; margin-bottom: 12px; }
-        .search-container input { margin-bottom: 0; } /* Прибираємо відступ, бо він на контейнері */
-        .results-dropdown {
-            position: absolute; top: 100%; left: 0; right: 0; background: white;
-            border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 8px 8px;
-            max-height: 220px; overflow-y: auto; z-index: 1000; display: none;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        :root { 
+            --em-red: #dc2626;         
+            --em-red-glow: rgba(220, 38, 38, 0.4);
+            --em-red-light: #ef4444;   
+            --asphalt-dark: #0f172a;   
+            --asphalt-light: #1e293b;  
+            --black-bg: #000000;       
+            --input-bg: #111827;       
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
-        .result-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-size: 0.95rem; color: var(--dark); }
-        .result-item:active, .result-item:hover { background: #f1f5f9; }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: radial-gradient(circle at top center, var(--asphalt-light), var(--black-bg)); 
+            color: var(--text-main);
+            display: flex; 
+            justify-content: center; 
+            padding: 20px 10px; 
+            margin: 0; 
+            min-height: 100vh;
+        }
+
+        .card { 
+            background: rgba(15, 23, 42, 0.75); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            width: 100%; 
+            max-width: 450px; 
+            border-radius: 16px; 
+            padding: 30px 25px; 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.05);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* BRAND HEADER - MONOLITHIC */
+        .brand-header { 
+            text-align: center; 
+            margin-bottom: 25px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .logo-box {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .brand-em { 
+            font-size: 6rem; 
+            font-weight: 900; 
+            line-height: 0.75; 
+            color: var(--em-red);
+            text-shadow: 0px 4px 15px var(--em-red-glow);
+            letter-spacing: -4px;
+            margin: 0;
+            padding-right: 5px; 
+        }
+        .brand-shipping { 
+            display: flex;
+            justify-content: space-between; 
+            font-size: 0.95rem; 
+            font-weight: 900; 
+            color: var(--text-muted); 
+            margin-top: 8px;
+            padding: 0 2px;
+        }
+        .brand-shipping span { color: #cbd5e1; }
+        .tool-name { 
+            font-size: 0.7rem; 
+            color: var(--em-red-light); 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+            margin-top: 15px; 
+            font-weight: 600; 
+            border-top: 1px solid rgba(220, 38, 38, 0.3);
+            padding-top: 8px;
+            width: 70%;
+        }
+
+        .status { font-size: 11px; text-align: center; margin-bottom: 20px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s; }
+        .status.success { background: rgba(34, 197, 94, 0.1); color: #4ade80; border-color: rgba(34, 197, 94, 0.2); }
+
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        input, select { 
+            width: 100%; 
+            padding: 14px 15px; 
+            background: var(--input-bg);
+            border: 1px solid var(--border-color); 
+            color: var(--text-main);
+            border-radius: 10px; 
+            font-size: 16px; 
+            margin-bottom: 15px; 
+            box-sizing: border-box; 
+            outline: none; 
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--em-red);
+            box-shadow: 0 0 0 3px var(--em-red-glow);
+        }
+
+        .search-container { position: relative; margin-bottom: 15px; }
+        .search-container input { margin-bottom: 0; padding-right: 40px; }
+        .clear-btn {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--text-muted); font-size: 24px;
+            line-height: 1; cursor: pointer; padding: 0; display: none;
+        }
+        .clear-btn:active { color: var(--em-red-light); }
+
+        .results-dropdown {
+            position: absolute; top: calc(100% + 5px); left: 0; right: 0; 
+            background: var(--asphalt-light); border: 1px solid var(--border-color); 
+            border-radius: 10px; max-height: 220px; overflow-y: auto; z-index: 1000; display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .result-item { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-size: 0.95rem; color: var(--text-main); transition: background 0.2s;}
+        .result-item:active, .result-item:hover { background: rgba(220, 38, 38, 0.1); color: var(--em-red-light); }
         .result-item:last-child { border-bottom: none; }
+
+        select {
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto;
+        }
+
+        /* Чек результатів */
+        .results {
+            background: rgba(0,0,0,0.4); 
+            border-radius: 12px; 
+            padding: 20px; 
+            margin-top: 20px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+        }
+        .line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9rem; color: #cbd5e1; }
+        .line:first-child { padding-top: 0; }
+        .orange-line { 
+            color: var(--em-red-light); font-weight: 700; background: rgba(220, 38, 38, 0.05); 
+            margin: 10px -20px 0; padding: 12px 20px; border-top: 1px dashed rgba(220, 38, 38, 0.3); border-bottom: none;
+        }
+        
+        .total { 
+            background: linear-gradient(135deg, var(--asphalt-dark), var(--black-bg)); 
+            color: white; padding: 20px; border-radius: 10px; margin-top: 15px; 
+            display: flex; justify-content: space-between; align-items: center;
+            font-weight: 900; font-size: 1.25rem; border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.15);
+        }
+        .total span:last-child { color: var(--em-red-light); font-size: 1.5rem; text-shadow: 0 0 10px var(--em-red-glow); }
+
+        .badge { float: right; font-size: 0.7rem; padding: 3px 10px; border-radius: 12px; color: white; display: none; font-weight: 700; letter-spacing: 1px;}
+        .bg-c { background: var(--em-red); box-shadow: 0 0 10px var(--em-red-glow); } 
+        .bg-i { background: var(--asphalt-light); border: 1px solid var(--border-color); }
+
+        /* ВІЗУАЛЬНИЙ ТАЙМЛАЙН */
+        .timeline {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .tl-step { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+        .tl-icon { font-size: 1.5rem; }
+        .tl-text { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-align: center;}
+        .tl-line { flex: 1; height: 2px; background: rgba(255,255,255,0.1); position: relative; margin: 0 10px; top: -10px;}
+        .tl-line::after { content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); font-size: 12px; }
+        .line-ship::after { content: '🚢'; }
+        .line-truck::after { content: '🚛'; }
     </style>
 </head>
 <body>
 <div class="card">
-    <h2>LOGISTIC PRO</h2>
+    <div class="brand-header">
+        <div class="logo-box">
+            <div class="brand-em">EM</div>
+            <div class="brand-shipping">
+                <span>S</span><span>H</span><span>I</span><span>P</span><span>P</span><span>I</span><span>N</span><span>G</span>
+            </div>
+        </div>
+        <div class="tool-name">Logistic Calculator</div>
+    </div>
+
     <div id="dbStatus" class="status">Завантаження бази...</div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div><label>Тип авто</label><select id="type" onchange="calc()"><option value="Car">Sedan</option><option value="SUV">SUV</option><option value="Pickup">Pickup</option><option value="Motorcycle">Moto</option></select></div>
-        <div><label>Рік випуску</label><input type="number" id="year" value="2020" oninput="calc()"></div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+            <label>Тип авто</label>
+            <select id="type" onchange="triggerCalc()"><option value="Car">Sedan</option><option value="SUV">SUV</option><option value="Pickup">Pickup</option><option value="Motorcycle">Moto</option></select>
+        </div>
+        <div>
+            <label>Рік випуску</label>
+            <input type="number" id="year" value="2020" oninput="triggerCalc()">
+        </div>
     </div>
     
-    <label>Локація <span id="aucBadge" class="badge"></span></label>
+    <label>Локація аукціону <span id="aucBadge" class="badge"></span></label>
     <div class="search-container">
-        <input type="text" id="city" placeholder="Почніть вводити..." autocomplete="off">
+        <input type="text" id="city" placeholder="Почніть вводити місто..." autocomplete="off">
+        <button type="button" id="clearBtn" class="clear-btn">&times;</button>
         <div id="locList" class="results-dropdown"></div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div><label id="volLabel">Двигун (см³)</label><input type="number" id="vol" value="2000" oninput="calc()"></div>
-        <div><label>Пальне</label><select id="fuel" onchange="updateFuelLabel(); calc()"><option value="petrol">Бензин</option><option value="diesel">Дизель</option><option value="hybrid">Гібрид</option><option value="electric">Електро</option></select></div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+            <label id="volLabel">Двигун (см³)</label>
+            <input type="number" id="vol" value="2000" oninput="triggerCalc()">
+        </div>
+        <div>
+            <label>Пальне</label>
+            <select id="fuel" onchange="updateFuelLabel(); triggerCalc()"><option value="petrol">Бензин</option><option value="diesel">Дизель</option><option value="hybrid">Гібрид</option><option value="electric">Електро</option></select>
+        </div>
     </div>
-    <label>Місто отримання</label><select id="destination" onchange="calc()"></select>
-    <label>Ставка ($)</label><input type="number" id="bid" placeholder="0" oninput="calc()">
+
+    <label>Місто отримання</label>
+    <select id="destination" onchange="triggerCalc()"></select>
+    
+    <label>Ставка на аукціоні ($)</label>
+    <input type="number" id="bid" placeholder="0" oninput="triggerCalc()">
 
     <div class="results">
         <div class="line"><span>Вартість лоту</span><span id="resBid">$0</span></div>
@@ -66,18 +243,30 @@
         <div class="line"><span>Морський фрахт</span><span id="resSea">$0</span></div>
         <div class="line"><span>Комплекс / Доставка</span><span id="resComplex">$0</span></div>
         <div class="line orange-line"><span>Митні платежі (МВ)</span><span id="resCustoms">$0</span></div>
-        <div class="total"><span>СУМА РАЗОМ:</span><span id="resTotal">$0</span></div>
-        <div class="footer-info">
-            Відправка: <span id="pIn" style="font-weight:700; color:var(--dark)">-</span> | 
-            Прибуття: <span id="pOut" style="font-weight:700; color:var(--blue)">-</span>
+        <div class="total"><span>РАЗОМ:</span><span id="resTotal">$0</span></div>
+        
+        <div class="timeline" id="timelineUI" style="display:none;">
+            <div class="tl-step"><span class="tl-icon" id="flagStart">🇺🇸</span><span class="tl-text" id="tlStart">Port</span></div>
+            <div class="tl-line line-ship"></div>
+            <div class="tl-step"><span class="tl-icon" id="flagEU">🇪🇺</span><span class="tl-text" id="tlEU">Port</span></div>
+            <div class="tl-line line-truck"></div>
+            <div class="tl-step"><span class="tl-icon">🇺🇦</span><span class="tl-text" id="tlDest">Львів</span></div>
         </div>
     </div>
 </div>
 
 <script>
+    // Твоя оригінальна база формул
     const cpS = [{m:49.99,f:1},{m:99.99,f:1},{m:199.99,f:25},{m:299.99,f:60},{m:349.99,f:85},{m:399.99,f:100},{m:449.99,f:125},{m:499.99,f:135},{m:549.99,f:145},{m:599.99,f:155},{m:699.99,f:170},{m:799.99,f:195},{m:899.99,f:215},{m:999.99,f:230},{m:1199.99,f:250},{m:1299.99,f:270},{m:1399.99,f:285},{m:1499.99,f:300},{m:1599.99,f:315},{m:1699.99,f:330},{m:1799.99,f:350},{m:1999.99,f:370},{m:2399.99,f:390},{m:2499.99,f:425},{m:2999.99,f:460},{m:3499.99,f:505},{m:3999.99,f:555},{m:4499.99,f:600},{m:4999.99,f:625},{m:5499.99,f:650},{m:5999.99,f:675},{m:6499.99,f:700},{m:6999.99,f:720},{m:7499.99,f:755},{m:7999.99,f:775},{m:8499.99,f:800},{m:8999.99,f:820},{m:9999.99,f:820},{m:10499.99,f:850},{m:10999.99,f:850},{m:11499.99,f:850},{m:11999.99,f:860},{m:12499.99,f:875},{m:14999.99,f:890},{m:Infinity,p:0.06}];
     const cpM = [{m:49.99,f:30},{m:99.99,f:45},{m:199.99,f:70},{m:299.99,f:105},{m:349.99,f:130},{m:399.99,f:132.5},{m:449.99,f:145},{m:499.99,f:150},{m:549.99,f:165},{m:599.99,f:170},{m:699.99,f:190},{m:799.99,f:225},{m:899.99,f:250},{m:999.99,f:270},{m:1199.99,f:300},{m:1299.99,f:335},{m:1399.99,f:335},{m:1499.99,f:360},{m:1599.99,f:370},{m:1699.99,f:400},{m:1799.99,f:415},{m:1999.99,f:465},{m:2399.99,f:500},{m:2499.99,f:510},{m:2999.99,f:570},{m:3499.99,f:695},{m:3999.99,f:710},{m:4499.99,f:710},{m:4999.99,f:720},{m:5499.99,f:780},{m:5999.99,f:815},{m:6499.99,f:850},{m:6999.99,f:880},{m:7499.99,f:900},{m:7999.99,f:1020},{m:8999.99,f:1025},{m:9999.99,f:1050},{m:Infinity,p:0.105}];
     const iaF = [{m:99.99,f:1},{m:199.99,f:25},{m:299.99,f:60},{m:349.99,f:85},{m:399.99,f:100},{m:449.99,f:125},{m:499.99,f:135},{m:549.99,f:145},{m:599.99,f:155},{m:699.99,f:170},{m:799.99,f:195},{m:899.99,f:215},{m:999.99,f:230},{m:1199.99,f:250},{m:1299.99,f:270},{m:1399.99,f:285},{m:1499.99,f:300},{m:1599.99,f:315},{m:1699.99,f:330},{m:1799.99,f:350},{m:1999.99,f:370},{m:2399.99,f:390},{m:2499.99,f:425},{m:2999.99,f:460},{m:3499.99,f:505},{m:3999.99,f:555},{m:4499.99,f:600},{m:4999.99,f:625},{m:5499.99,f:650},{m:5999.99,f:675},{m:6499.99,f:700},{m:6999.99,f:720},{m:7499.99,f:755},{m:7999.99,f:775},{m:8499.99,f:800},{m:8999.99,f:820},{m:9999.99,f:820},{m:11499.99,f:850},{m:11999.99,f:860},{m:12499.99,f:875},{m:14999.99,f:890},{m:Infinity,p:0.06}];
+
+    let currentTotal = 0; // Для анімації спідометра
+
+    // Haptic Feedback (Вібрація)
+    function vibro(ms = 30) {
+        if(navigator.vibrate) navigator.vibrate(ms);
+    }
 
     function updateFuelLabel() {
         const fuel = document.getElementById('fuel').value;
@@ -94,20 +283,17 @@
         document.getElementById('dbStatus').innerText = "✅ База активна: " + keys.length + " локацій";
         document.getElementById('dbStatus').classList.add('success');
 
-        // ЛОГІКА НОВОГО ВИПАДАЮЧОГО МЕНЮ
         const cityInput = document.getElementById('city');
         const locDropdown = document.getElementById('locList');
+        const clearBtn = document.getElementById('clearBtn');
 
         cityInput.addEventListener('input', function() {
+            clearBtn.style.display = this.value.length > 0 ? 'block' : 'none';
             const query = this.value.toUpperCase();
             locDropdown.innerHTML = '';
             
-            if (query.length < 1) {
-                locDropdown.style.display = 'none';
-                return;
-            }
+            if (query.length < 1) { locDropdown.style.display = 'none'; return; }
 
-            // Шукаємо співпадіння і обмежуємо до 20 результатів для швидкості
             const filtered = keys.filter(k => k.toUpperCase().includes(query)).slice(0, 20);
 
             if (filtered.length > 0) {
@@ -116,10 +302,12 @@
                     div.className = 'result-item';
                     div.textContent = loc;
                     div.onclick = () => {
+                        vibro();
                         cityInput.value = loc;
+                        clearBtn.style.display = 'block';
                         locDropdown.style.display = 'none';
-                        cityInput.blur(); // Ховаємо клавіатуру на телефоні
-                        handleLoc(); // Викликаємо твою оригінальну функцію
+                        cityInput.blur(); 
+                        handleLoc(); 
                     };
                     locDropdown.appendChild(div);
                 });
@@ -129,11 +317,18 @@
             }
         });
 
-        // Закриваємо меню, якщо користувач тапнув поза ним
+        clearBtn.addEventListener('click', () => {
+            vibro(50);
+            cityInput.value = '';
+            clearBtn.style.display = 'none';
+            locDropdown.style.display = 'none';
+            document.getElementById('aucBadge').style.display = 'none';
+            document.getElementById('timelineUI').style.display = 'none';
+            cityInput.focus();
+        });
+
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-container')) {
-                locDropdown.style.display = 'none';
-            }
+            if (!e.target.closest('.search-container')) { locDropdown.style.display = 'none'; }
         });
     }
 
@@ -152,13 +347,35 @@
         calc();
     }
 
+    function triggerCalc() { vibro(20); calc(); }
+
+    // Анімація цифр (Спідометр)
+    function animateValue(id, start, end, duration) {
+        if (start === end) return;
+        const obj = document.getElementById(id);
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const current = Math.floor(progress * (end - start) + start);
+            obj.innerText = "$" + current.toLocaleString('uk-UA');
+            if (progress < 1) window.requestAnimationFrame(step);
+            else obj.innerText = "$" + end.toLocaleString('uk-UA');
+        };
+        window.requestAnimationFrame(step);
+    }
+
     function calc() {
         const bid = parseFloat(document.getElementById('bid').value) || 0;
         const city = document.getElementById('city').value;
         const t = document.getElementById('type').value;
-        const cpx = parseFloat(document.getElementById('destination').value) || 0;
+        const destSelect = document.getElementById('destination');
+        const cpx = parseFloat(destSelect.value) || 0;
+        const destName = destSelect.options[destSelect.selectedIndex]?.text.split(' (')[0] || "Львів";
+        
         const loc = db.copart[city] || db.iaai[city];
         if (!loc) return;
+        
         const s = seaRates[loc.port];
         const land = (loc[t] === "Call" || !loc[t]) ? (loc["Car"] || 0) : loc[t];
         const sea = s[t] || s["Car"] || 0;
@@ -169,7 +386,6 @@
         fee += 300; 
         if (db.iaai[city]) fee += 20;
 
-        // SWIFT: (Лот + Збір + Суша + Море) * 2.5% + 70$
         const sw = ((bid + fee + land + sea) * 0.025 + 70);
 
         const fuel = document.getElementById('fuel').value;
@@ -181,15 +397,10 @@
         let dty = 0, exc = 0, vt = 0, electricFee = 0;
 
         if (fuel === 'electric') {
-            dty = 0;
-            exc = vol * 1.08; 
-            vt = (cBasis + exc) * 0.20; 
-            electricFee = 200; 
+            dty = 0; exc = vol * 1.08; vt = (cBasis + exc) * 0.20; electricFee = 200; 
         } else if (t === 'Motorcycle') {
             dty = cBasis * 0.10;
-            let motoRate = 0.447;
-            if (vol <= 500) motoRate = 0.062;
-            else if (vol <= 800) motoRate = 0.443;
+            let motoRate = (vol <= 500) ? 0.062 : ((vol <= 800) ? 0.443 : 0.447);
             exc = (vol / 100) * motoRate * 1.08;
             vt = (cBasis + dty + exc) * 0.20;
         } else {
@@ -207,7 +418,9 @@
             vt = (cBasis + dty + exc) * 0.20;
         }
         const cst = dty + exc + vt;
+        const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee;
 
+        // Форматування та вивід
         const f = (n) => "$" + Math.ceil(n).toLocaleString('uk-UA');
         document.getElementById('resBid').innerText = f(bid);
         document.getElementById('resFee').innerText = f(fee);
@@ -216,11 +429,20 @@
         document.getElementById('resSea').innerText = f(sea);
         document.getElementById('resComplex').innerText = f(cpx);
         document.getElementById('resCustoms').innerText = f(cst);
-        document.getElementById('pIn').innerText = loc.port;
-        document.getElementById('pOut').innerText = s.end;
         
-        const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee;
-        document.getElementById('resTotal').innerText = f(finalTotal);
+        // Анімація фінальної суми
+        animateValue('resTotal', currentTotal, Math.ceil(finalTotal), 600);
+        currentTotal = Math.ceil(finalTotal);
+
+        // Оновлення таймлайну
+        document.getElementById('timelineUI').style.display = 'flex';
+        document.getElementById('tlStart').innerText = loc.port;
+        document.getElementById('tlEU').innerText = s.end;
+        document.getElementById('tlDest').innerText = destName;
+        
+        // Прапорці для портів
+        document.getElementById('flagStart').innerText = (loc.port === 'Toronto' || loc.port.includes('Alberta') || loc.port.includes('Halifax')) ? '🇨🇦' : '🇺🇸';
+        document.getElementById('flagEU').innerText = (s.end === 'Gdansk') ? '🇵🇱' : '🇱🇹';
     }
 </script>
 </body>
