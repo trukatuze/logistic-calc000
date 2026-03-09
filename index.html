@@ -6,11 +6,12 @@
     <title>EM SHIPPING | Logistic Calculator</title>
     <script src="full_db.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+        /* НОВИЙ ПРЕМІАЛЬНИЙ ШРИФТ OUTFIT */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
         :root { 
-            --em-red: #dc2626;         
-            --em-red-glow: rgba(220, 38, 38, 0.4);
+            --em-red: #ff3333;         
+            --em-red-glow: rgba(255, 51, 51, 0.4);
             --em-red-light: #ef4444;   
             --asphalt-dark: #0f172a;   
             --asphalt-light: #1e293b;  
@@ -19,10 +20,11 @@
             --border-color: #334155;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
+            --copart-blue: #3b82f6;
         }
 
         body { 
-            font-family: 'Inter', sans-serif; 
+            font-family: 'Outfit', sans-serif; 
             background: radial-gradient(circle at top center, var(--asphalt-light), var(--black-bg)); 
             color: var(--text-main);
             display: flex; 
@@ -43,6 +45,7 @@
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05); 
             border: 1px solid rgba(255,255,255,0.05);
             animation: fadeIn 0.5s ease-out;
+            position: relative;
         }
 
         @keyframes fadeIn {
@@ -52,168 +55,139 @@
 
         /* PARTNERS ROW */
         .partners-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .partner-link {
-            text-decoration: none;
-            opacity: 0.6;
-            transition: all 0.3s ease;
-            font-size: 1.1rem;
-            line-height: 1;
-        }
-        .partner-link:hover {
-            opacity: 1;
-            transform: scale(1.05);
-        }
-        
+        .partner-link { text-decoration: none; opacity: 0.6; transition: all 0.3s ease; font-size: 1.1rem; line-height: 1; }
+        .partner-link:hover { opacity: 1; transform: scale(1.05); }
         .logo-bidcars { color: #f8fafc; font-weight: 900; font-style: italic; letter-spacing: -0.5px; }
-        .logo-bidcars span { color: #3b82f6; }
-        .logo-copart { color: #3b82f6; font-weight: 900; letter-spacing: -0.5px; }
+        .logo-bidcars span { color: var(--copart-blue); }
+        .logo-copart { color: var(--copart-blue); font-weight: 900; letter-spacing: -0.5px; }
         .logo-iaa { color: #dc2626; font-weight: 900; font-style: italic; letter-spacing: -1px; }
         .logo-impact { color: #ef4444; font-weight: 900; font-style: italic; letter-spacing: -0.5px; }
 
-        /* BRAND HEADER - MONOLITHIC */
+        /* BRAND HEADER - REDESIGNED EM */
         .brand-header { 
-            text-align: center; 
-            margin-bottom: 25px; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center;
         }
-        .logo-box {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: stretch;
-        }
+        .logo-box { display: inline-flex; flex-direction: column; align-items: center; }
         .brand-em { 
-            font-size: 6rem; 
+            font-size: 5.5rem; 
             font-weight: 900; 
-            line-height: 0.75; 
-            color: var(--em-red);
-            text-shadow: 0px 4px 15px var(--em-red-glow);
-            letter-spacing: -4px;
-            margin: 0;
-            padding-right: 5px; 
+            line-height: 0.8; 
+            color: var(--em-red); 
+            /* Ніжне червоне неонове підсвічування */
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.7), 0 0 20px rgba(255, 51, 51, 0.4), 0 0 35px rgba(255, 51, 51, 0.2);
+            margin: 0; 
+            /* Розтягнення у 1.5 рази */
+            transform: scaleX(1.5);
+            display: inline-block;
         }
         .brand-shipping { 
-            display: flex;
-            justify-content: space-between; 
-            font-size: 0.95rem; 
-            font-weight: 900; 
-            color: var(--text-muted); 
-            margin-top: 8px;
-            padding: 0 2px;
+            width: 100%;
+            display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 900; 
+            color: var(--text-muted); margin-top: 15px; padding: 0 5px; box-sizing: border-box;
         }
         .brand-shipping span { color: #cbd5e1; }
-        .tool-name { 
-            font-size: 0.7rem; 
-            color: var(--em-red-light); 
-            letter-spacing: 2px; 
-            text-transform: uppercase; 
-            margin-top: 15px; 
-            font-weight: 600; 
-            border-top: 1px solid rgba(220, 38, 38, 0.3);
-            padding-top: 8px;
-            width: 70%;
-        }
 
-        .status { font-size: 11px; text-align: center; margin-bottom: 20px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s; }
+        /* КНОПКИ РЕЖИМІВ КАЛЬКУЛЯТОРА */
+        .calc-options {
+            display: flex; flex-direction: column; align-items: center; width: 100%; margin: 20px 0 25px 0;
+        }
+        .mode-btn {
+            font-size: 0.95rem; /* Розмір як у SHIPPING */
+            font-weight: 800;
+            color: var(--copart-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            text-align: center;
+            width: 85%;
+            box-sizing: border-box;
+            border: 1px solid transparent;
+        }
+        .mode-btn:hover { background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); }
+        .mode-btn.active {
+            color: white;
+            background: var(--copart-blue);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            border-color: var(--copart-blue);
+        }
+        .calc-divider { width: 70%; height: 1px; background: rgba(220, 38, 38, 0.4); margin: 6px 0; }
+
+        /* ВІКНО ПАРОЛЮ (МОДАЛКА) */
+        .dealer-modal {
+            position: absolute; top: 0; left: 0; right: 0;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px; padding: 35px 25px; z-index: 100;
+            clip-path: inset(0 0 100% 0); transition: clip-path 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 2px solid var(--copart-blue); box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+        .dealer-modal.open { clip-path: inset(0 0 0 0); }
+        .dealer-modal label { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; display: block; }
+        .dealer-modal input {
+            text-align: center; font-size: 2rem; font-weight: 800; letter-spacing: 15px;
+            width: 70%; margin: 0 auto 20px; display: block; padding: 10px;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); outline: none;
+        }
+        .dealer-modal input:focus { border-color: var(--copart-blue); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+        .modal-actions { display: flex; gap: 10px; justify-content: center; }
+        .modal-actions button {
+            flex: 1; padding: 14px; border-radius: 10px; font-weight: 700; font-family: inherit; font-size: 0.9rem;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-cancel { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-cancel:hover { background: #334155; }
+        .btn-ok { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.4); color: var(--copart-blue); }
+        .btn-ok:hover { background: var(--copart-blue); color: white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+
+        .status { font-size: 11px; font-weight: 500; text-align: center; margin-bottom: 20px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s; }
         .status.success { background: rgba(34, 197, 94, 0.1); color: #4ade80; border-color: rgba(34, 197, 94, 0.2); }
 
-        label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        label { display: block; line-height: 1.3; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
         
         input, select { 
-            width: 100%; 
-            padding: 14px 15px; 
-            background: var(--input-bg);
-            border: 1px solid var(--border-color); 
-            color: var(--text-main);
-            border-radius: 10px; 
-            font-size: 16px; 
-            margin-bottom: 15px; 
-            box-sizing: border-box; 
-            outline: none; 
-            transition: all 0.3s ease;
-            -webkit-appearance: none;
+            font-family: inherit; font-weight: 500; width: 100%; padding: 14px 15px; 
+            background: var(--input-bg); border: 1px solid var(--border-color); 
+            color: var(--text-main); border-radius: 10px; font-size: 16px; 
+            margin-bottom: 15px; box-sizing: border-box; outline: none; transition: all 0.3s ease; -webkit-appearance: none;
         }
-        
-        input:focus, select:focus {
-            border-color: var(--em-red);
-            box-shadow: 0 0 0 3px var(--em-red-glow);
-        }
+        input:focus, select:focus { border-color: var(--em-red); box-shadow: 0 0 0 3px var(--em-red-glow); }
 
         .search-container { position: relative; margin-bottom: 15px; }
         .search-container input { margin-bottom: 0; padding-right: 40px; }
-        .clear-btn {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: var(--text-muted); font-size: 24px;
-            line-height: 1; cursor: pointer; padding: 0; display: none;
-        }
+        .clear-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); font-size: 24px; line-height: 1; cursor: pointer; padding: 0; display: none; }
         .clear-btn:active { color: var(--em-red-light); }
 
-        .results-dropdown {
-            position: absolute; top: calc(100% + 5px); left: 0; right: 0; 
-            background: var(--asphalt-light); border: 1px solid var(--border-color); 
-            border-radius: 10px; max-height: 220px; overflow-y: auto; z-index: 1000; display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
+        .results-dropdown { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: var(--asphalt-light); border: 1px solid var(--border-color); border-radius: 10px; max-height: 220px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .result-item { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-size: 0.95rem; color: var(--text-main); transition: background 0.2s;}
         .result-item:active, .result-item:hover { background: rgba(220, 38, 38, 0.1); color: var(--em-red-light); }
         .result-item:last-child { border-bottom: none; }
 
-        select {
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto;
-        }
+        select { background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto; }
 
         /* Чек результатів */
-        .results {
-            background: rgba(0,0,0,0.4); 
-            border-radius: 12px; 
-            padding: 20px; 
-            margin-top: 20px; 
-            border: 1px solid rgba(255,255,255,0.05); 
-        }
-        .line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9rem; color: #cbd5e1; }
+        .results { background: rgba(0,0,0,0.4); border-radius: 12px; padding: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.95rem; font-weight: 400; color: #cbd5e1; }
         .line:first-child { padding-top: 0; }
+        .line span:last-child { font-weight: 600; color: #f8fafc; }
+        .orange-line { margin: 10px -20px 0; padding: 12px 20px; border-top: 1px dashed rgba(220, 38, 38, 0.3); background: rgba(220, 38, 38, 0.03); color: var(--em-red-light); font-weight: 700; border-bottom: none;}
         
-        .customs-block {
-            background: rgba(220, 38, 38, 0.03); 
-            margin: 10px -20px 0; 
-            border-top: 1px dashed rgba(220, 38, 38, 0.3); 
-        }
-        .customs-header {
-            color: var(--em-red-light); 
-            font-weight: 700; 
-            padding: 12px 20px 8px; 
-            display: flex; justify-content: space-between;
-        }
-        .sub-line {
-            display: flex; justify-content: space-between;
-            padding: 4px 20px; font-size: 0.8rem; color: #94a3b8;
-        }
+        .customs-block { background: rgba(220, 38, 38, 0.03); margin: 10px -20px 0; border-top: 1px dashed rgba(220, 38, 38, 0.3); }
+        .customs-header { color: var(--em-red-light); font-weight: 700; padding: 12px 20px 8px; display: flex; justify-content: space-between; transition: color 0.3s;}
+        .sub-line { display: flex; justify-content: space-between; padding: 4px 20px; font-size: 0.85rem; color: #94a3b8; }
         .sub-line:last-child { padding-bottom: 12px; }
         .curr-uah { color: #64748b; font-size: 0.9em; margin-right: 6px; font-weight: normal;}
         .rate-text { color: #64748b; font-size: 0.75rem; text-align: right;}
 
-        .total { 
-            background: linear-gradient(135deg, var(--asphalt-dark), var(--black-bg)); 
-            color: white; padding: 20px; border-radius: 10px; margin-top: 15px; 
-            display: flex; justify-content: space-between; align-items: center;
-            font-weight: 900; font-size: 1.25rem; border: 1px solid rgba(220, 38, 38, 0.3);
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.15);
-        }
-        .total span:last-child { color: var(--em-red-light); font-size: 1.5rem; text-shadow: 0 0 10px var(--em-red-glow); }
+        .total { background: linear-gradient(135deg, var(--asphalt-dark), var(--black-bg)); color: white; padding: 20px; border-radius: 10px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 1.25rem; border: 1px solid rgba(220, 38, 38, 0.3); box-shadow: 0 0 20px rgba(220, 38, 38, 0.15); }
+        .total span:last-child { color: var(--em-red-light); font-size: 1.6rem; letter-spacing: -0.5px; text-shadow: 0 0 10px var(--em-red-glow); }
 
-        .timeline {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);
-        }
+        .timeline { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
         .tl-step { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
         .tl-icon { font-size: 1.5rem; }
         .tl-text { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-align: center;}
@@ -222,35 +196,31 @@
         .line-ship::after { content: '🚢'; }
         .line-truck::after { content: '🚛'; }
 
-        /* БЛОК ДЛЯ ФОТО КОНТЕЙНЕРА */
-        .container-photo-box {
-            margin-top: 20px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: var(--input-bg);
-            text-align: center;
-            padding-bottom: 8px;
-        }
-        .container-photo-box img {
-            width: 100%;
-            height: auto;
-            display: block;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .container-photo-caption {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 8px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .container-photo-box { margin-top: 20px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: var(--input-bg); text-align: center; padding-bottom: 8px; }
+        .container-photo-box img { width: 100%; height: auto; display: block; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .container-photo-caption { font-size: 0.7rem; color: var(--text-muted); margin-top: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); border-color: red;}
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); border-color: red;}
+            40%, 60% { transform: translate3d(4px, 0, 0); border-color: red;}
         }
     </style>
 </head>
 <body>
 <div class="card">
     
+    <div id="dealerModal" class="dealer-modal">
+        <label>Enter Dealer Password</label>
+        <input type="password" id="dealerPin" maxlength="3" pattern="\d*" placeholder="***">
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeDealerModal()">Cancel</button>
+            <button class="btn-ok" onclick="submitDealerModal()">OK</button>
+        </div>
+    </div>
+
     <div class="partners-row">
         <a href="https://bid.cars/ua/" target="_blank" class="partner-link logo-bidcars">BID<span>CARS</span></a>
         <a href="https://www.copart.com/lotSearchResults?free=true&query=&qId=7ca33fe5-d792-427a-ad47-ae642e814bd2-1773050327211&index=undefined" target="_blank" class="partner-link logo-copart">Copart</a>
@@ -265,18 +235,23 @@
                 <span>S</span><span>H</span><span>I</span><span>P</span><span>P</span><span>I</span><span>N</span><span>G</span>
             </div>
         </div>
-        <div class="tool-name">Logistic Calculator</div>
+    </div>
+
+    <div class="calc-options">
+        <div class="mode-btn" id="btnDealer" onclick="openDealerModal()">DEALERS ONLY CALCULATOR</div>
+        <div class="calc-divider"></div>
+        <div class="mode-btn active" id="btnPublic" onclick="activatePublicMode()">LOGISTIC CALCULATOR</div>
     </div>
 
     <div id="dbStatus" class="status">Підключення до бази та НБУ...</div>
     
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-        <div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: flex-end;">
+        <div style="width: 100%;">
             <label>Тип авто</label>
             <select id="type" onchange="triggerCalc()"><option value="Car">Sedan</option><option value="SUV">SUV</option><option value="Pickup">Pickup</option><option value="Motorcycle">Moto</option></select>
         </div>
-        <div>
-            <label>Рік випуску</label>
+        <div style="width: 100%;">
+            <label>Рік випуску (шильдик)</label>
             <input type="number" id="year" value="2020" oninput="triggerCalc()">
         </div>
     </div>
@@ -292,12 +267,12 @@
         <div id="locList" class="results-dropdown"></div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-        <div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: flex-end;">
+        <div style="width: 100%;">
             <label id="volLabel">Двигун (см³)</label>
             <input type="number" id="vol" value="2000" oninput="triggerCalc()">
         </div>
-        <div>
+        <div style="width: 100%;">
             <label>Пальне</label>
             <select id="fuel" onchange="updateFuelLabel(); triggerCalc()"><option value="petrol">Бензин</option><option value="diesel">Дизель</option><option value="hybrid">Гібрид</option><option value="electric">Електро</option></select>
         </div>
@@ -310,35 +285,35 @@
     <input type="number" id="bid" placeholder="0" oninput="triggerCalc()">
 
     <div class="results">
-        <div class="line"><span>Вартість лоту</span><span id="resBid">$0</span></div>
-        <div class="line"><span>Аукціонний збір</span><span id="resFee">$0</span></div>
-        <div class="line"><span>Трансфер (SWIFT)</span><span id="resSwift">$0</span></div>
-        <div class="line"><span>Суша по США</span><span id="resLand">$0</span></div>
-        <div class="line"><span>Морський фрахт</span><span id="resSea">$0</span></div>
-        <div class="line"><span>Комплекс / Доставка</span><span id="resComplex">$0</span></div>
         
-        <div class="line" id="lineEvSurcharge" style="display:none; font-weight:600; color: var(--em-red-light);"><span>EV Surcharge</span><span id="resEvSurcharge">$0</span></div>
-        
-        <div class="customs-block">
-            <div class="customs-header">
-                <span>Митні платежі (МВ)</span>
-                <span id="resCustomsTotal">$0</span>
+        <div id="publicLines">
+            <div class="line"><span id="pubDeliveryLabel">Повна вартість з доставкою</span><span id="pubDeliveryRes">$0</span></div>
+            <div class="line orange-line" style="display:flex; justify-content:space-between;">
+                <span id="pubCustomsLabel">Митні платежі (МВ)</span><span id="pubCustomsRes">$0</span>
             </div>
-            <div class="sub-line">
-                <span>├ Ввізне мито (10%)</span>
-                <span id="resDuty">$0</span>
-            </div>
-            <div class="sub-line">
-                <span>├ Акцизний збір</span>
-                <span id="resExcise">$0</span>
-            </div>
-            <div class="sub-line">
-                <span>├ ПДВ (20%)</span>
-                <span id="resVat">$0</span>
-            </div>
-            <div class="sub-line">
-                <span style="color:#64748b">└ Курс НБУ на сьогодні</span>
-                <span class="rate-text" id="resRates">-</span>
+        </div>
+
+        <div id="dealerLines" style="display:none;">
+            <div class="line"><span>Вартість лоту</span><span id="resBid">$0</span></div>
+            <div class="line"><span>Аукціонний збір</span><span id="resFee">$0</span></div>
+            <div class="line"><span>Трансфер (SWIFT)</span><span id="resSwift">$0</span></div>
+            <div class="line"><span>Суша по США</span><span id="resLand">$0</span></div>
+            <div class="line"><span>Морський фрахт</span><span id="resSea">$0</span></div>
+            <div class="line"><span id="complexLabel">Комплекс / Доставка</span><span id="resComplex">$0</span></div>
+            <div class="line" id="lineEvSurcharge" style="display:none; font-weight:600; color: var(--em-red-light);"><span style="color:var(--em-red-light)">EV Surcharge</span><span id="resEvSurcharge" style="color:var(--em-red-light)">$0</span></div>
+            
+            <div class="customs-block">
+                <div class="customs-header">
+                    <span id="customsTitle">Митні платежі (МВ)</span>
+                    <span id="resCustomsTotal">$0</span>
+                </div>
+                <div class="sub-line"><span>├ Ввізне мито (10%)</span><span id="resDuty">$0</span></div>
+                <div class="sub-line"><span>├ Акцизний збір</span><span id="resExcise">$0</span></div>
+                <div class="sub-line"><span>├ ПДВ (20%)</span><span id="resVat">$0</span></div>
+                <div class="sub-line">
+                    <span style="color:#64748b">└ Курс НБУ на сьогодні</span>
+                    <span class="rate-text" id="resRates">-</span>
+                </div>
             </div>
         </div>
 
@@ -368,6 +343,55 @@
     let usdRateNBU = 38.50; 
     let eurRateNBU = 42.00; 
     let crossRateEurUsd = 1.08; 
+    
+    // СТАН КАЛЬКУЛЯТОРА
+    let currentMode = 'public'; // 'public' або 'dealer'
+
+    function vibro(ms = 30) { if(navigator.vibrate) navigator.vibrate(ms); }
+
+    // ЛОГІКА ПАРОЛЮ
+    function openDealerModal() {
+        if (currentMode === 'dealer') return; // Вже активовано
+        vibro(30);
+        document.getElementById('dealerModal').classList.add('open');
+        setTimeout(() => document.getElementById('dealerPin').focus(), 300);
+    }
+    
+    function closeDealerModal() {
+        vibro(20);
+        document.getElementById('dealerModal').classList.remove('open');
+        document.getElementById('dealerPin').value = '';
+    }
+
+    function submitDealerModal() {
+        const pinInput = document.getElementById('dealerPin');
+        if(pinInput.value === '991') {
+            vibro([30, 50, 30]); 
+            closeDealerModal();
+            
+            currentMode = 'dealer';
+            document.getElementById('btnDealer').classList.add('active');
+            document.getElementById('btnPublic').classList.remove('active');
+            
+            calc(); // Перераховуємо чек у новому вигляді
+        } else {
+            vibro(100); 
+            pinInput.classList.add('shake');
+            setTimeout(() => {
+                pinInput.classList.remove('shake');
+                pinInput.value = '';
+            }, 400);
+        }
+    }
+
+    function activatePublicMode() {
+        if (currentMode === 'public') return;
+        vibro(30);
+        currentMode = 'public';
+        document.getElementById('btnPublic').classList.add('active');
+        document.getElementById('btnDealer').classList.remove('active');
+        calc(); 
+    }
 
     async function loadNBURates() {
         try {
@@ -387,18 +411,12 @@
                 
                 document.getElementById('resRates').innerText = `$1 = ${usdRateNBU.toFixed(2)} ₴ | €1 = ${eurRateNBU.toFixed(2)} ₴`;
 
-                if (document.getElementById('city').value !== "") {
-                    calc();
-                }
+                if (document.getElementById('city').value !== "") calc();
             }
         } catch (e) {
             console.error('Помилка НБУ:', e);
-            document.getElementById('resRates').innerText = "Офлайн режим (Базовий курс)";
+            document.getElementById('resRates').innerText = "Офлайн (Базовий курс)";
         }
-    }
-
-    function vibro(ms = 30) {
-        if(navigator.vibrate) navigator.vibrate(ms);
     }
 
     function updateFuelLabel() {
@@ -428,7 +446,6 @@
             locDropdown.innerHTML = '';
             
             if (query.length < 1) { locDropdown.style.display = 'none'; return; }
-
             const filtered = keys.filter(k => k.toUpperCase().includes(query)).slice(0, 20);
 
             if (filtered.length > 0) {
@@ -464,7 +481,7 @@
         });
 
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-container')) { locDropdown.style.display = 'none'; }
+            if (!e.target.closest('.search-container')) locDropdown.style.display = 'none';
         });
     }
 
@@ -480,11 +497,8 @@
         }
         
         dynLogo.style.display = 'block';
-        if (db.copart[city]) { 
-            dynLogo.innerHTML = '<span class="logo-copart">Copart</span>'; 
-        } else { 
-            dynLogo.innerHTML = '<span class="logo-iaa">IAA</span>'; 
-        }
+        if (db.copart[city]) { dynLogo.innerHTML = '<span class="logo-copart">Copart</span>'; } 
+        else { dynLogo.innerHTML = '<span class="logo-iaa">IAA</span>'; }
         
         const s = seaRates[loc.port];
         const dest = document.getElementById('destination');
@@ -521,9 +535,15 @@
         const city = document.getElementById('city').value;
         const t = document.getElementById('type').value;
         const destSelect = document.getElementById('destination');
-        const cpx = parseFloat(destSelect.value) || 0;
-        const destName = destSelect.options[destSelect.selectedIndex]?.text.split(' (')[0] || "Львів";
         
+        let destName = "";
+        if (destSelect.options.length > 0 && destSelect.selectedIndex >= 0) {
+            destName = destSelect.options[destSelect.selectedIndex].text.split(' (')[0];
+        }
+        
+        let cpx = parseFloat(destSelect.value) || 0;
+        if (t === 'Pickup' && cpx > 0) cpx += 100;
+
         const loc = db.copart[city] || db.iaai[city];
         if (!loc) return;
         
@@ -548,29 +568,18 @@
         
         let dty = 0, exc = 0, vt = 0, electricFee = 0;
 
-        if (fuel === 'electric' || fuel === 'hybrid') {
-            electricFee = 200;
-            document.getElementById('lineEvSurcharge').style.display = 'flex';
-            document.getElementById('resEvSurcharge').innerText = "$" + electricFee;
-        } else {
-            electricFee = 0;
-            document.getElementById('lineEvSurcharge').style.display = 'none';
-        }
+        if (fuel === 'electric' || fuel === 'hybrid') electricFee = 200;
 
-        // МИТНІ ПЛАТЕЖІ (Виправлено мотоцикли та ПДВ на електро)
         if (fuel === 'electric') {
-            dty = 0; 
-            exc = vol * crossRateEurUsd; 
-            vt = (cBasis + dty + exc) * 0.20; 
+            dty = 0; exc = vol * crossRateEurUsd; vt = (cBasis + dty + exc) * 0.20; 
         } else if (t === 'Motorcycle') {
             dty = cBasis * 0.10;
             let motoRate = (vol <= 500) ? 0.062 : ((vol <= 800) ? 0.443 : 0.447);
-            exc = vol * motoRate * crossRateEurUsd; // Виправлено формулу (без /100)
+            exc = vol * motoRate * crossRateEurUsd; 
             vt = (cBasis + dty + exc) * 0.20;
         } else {
             dty = cBasis * 0.10;
             let age = Math.min(15, Math.max(1, new Date().getFullYear() - yr - 1));
-            
             const CUSTOM_RATE = crossRateEurUsd; 
             if (fuel === 'hybrid') exc = 100 * CUSTOM_RATE;
             else if (fuel === 'petrol') {
@@ -584,31 +593,74 @@
         }
         
         const cst = dty + exc + vt;
-        const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee;
-
         const f = (n) => "$" + Math.ceil(n).toLocaleString('uk-UA');
-        document.getElementById('resBid').innerText = f(bid);
-        document.getElementById('resFee').innerText = f(fee);
-        document.getElementById('resSwift').innerText = f(sw);
-        document.getElementById('resLand').innerText = f(land);
-        document.getElementById('resSea').innerText = f(sea);
-        document.getElementById('resComplex').innerText = f(cpx);
-        
-        document.getElementById('resCustomsTotal').innerHTML = formatUahUsd(cst);
-        document.getElementById('resDuty').innerHTML = formatUahUsd(dty);
-        document.getElementById('resExcise').innerHTML = formatUahUsd(exc);
-        document.getElementById('resVat').innerHTML = formatUahUsd(vt);
-        
-        animateValue('resTotal', currentTotal, Math.ceil(finalTotal), 600);
-        currentTotal = Math.ceil(finalTotal);
 
+        // ВІДОБРАЖЕННЯ В ЗАЛЕЖНОСТІ ВІД РЕЖИМУ (PUBLIC vs DEALER)
+        if (currentMode === 'dealer') {
+            document.getElementById('dealerLines').style.display = 'block';
+            document.getElementById('publicLines').style.display = 'none';
+            document.getElementById('containerPhotoBlock').style.display = 'block';
+            
+            const complexLabel = document.getElementById('complexLabel');
+            complexLabel.innerText = destName ? `Комплекс / Доставка (${destName})` : `Комплекс / Доставка`;
+
+            const customsTitle = document.getElementById('customsTitle');
+            customsTitle.innerHTML = (t === 'Pickup') ? 'Митні платежі <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>' : 'Митні платежі (МВ)';
+
+            document.getElementById('resBid').innerText = f(bid);
+            document.getElementById('resFee').innerText = f(fee);
+            document.getElementById('resSwift').innerText = f(sw);
+            document.getElementById('resLand').innerText = f(land);
+            document.getElementById('resSea').innerText = f(sea);
+            document.getElementById('resComplex').innerText = f(cpx);
+            
+            if (electricFee > 0) {
+                document.getElementById('lineEvSurcharge').style.display = 'flex';
+                document.getElementById('resEvSurcharge').innerText = "$" + electricFee;
+            } else {
+                document.getElementById('lineEvSurcharge').style.display = 'none';
+            }
+            
+            document.getElementById('resCustomsTotal').innerHTML = formatUahUsd(cst);
+            document.getElementById('resDuty').innerHTML = formatUahUsd(dty);
+            document.getElementById('resExcise').innerHTML = formatUahUsd(exc);
+            document.getElementById('resVat').innerHTML = formatUahUsd(vt);
+            
+            const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee;
+            animateValue('resTotal', currentTotal, Math.ceil(finalTotal), 600);
+            currentTotal = Math.ceil(finalTotal);
+
+        } else {
+            // PUBLIC MODE (Спрощений)
+            document.getElementById('dealerLines').style.display = 'none';
+            document.getElementById('publicLines').style.display = 'block';
+            document.getElementById('containerPhotoBlock').style.display = 'none';
+
+            const pubLabel = document.getElementById('pubDeliveryLabel');
+            pubLabel.innerText = destName ? `Повна вартість з доставкою (${destName})` : `Повна вартість з доставкою`;
+
+            const pubCustoms = document.getElementById('pubCustomsLabel');
+            pubCustoms.innerHTML = (t === 'Pickup') ? 'Митні платежі <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>' : 'Митні платежі (МВ)';
+
+            // Рандомна націнка від 50 до 98 (генерується стабільно на основі ціни та об'єму, щоб не блимала при вводі)
+            const rndMarkup = 50 + ((bid + vol + cpx) % 49);
+            
+            // Вартість лоту + Збір + Трансфер + Суша + Море + Комплекс + EV Surcharge + $300 + Random(50-98)
+            const pubDeliverySum = bid + fee + sw + land + sea + cpx + electricFee + 300 + rndMarkup;
+            const pubTotal = pubDeliverySum + cst;
+
+            document.getElementById('pubDeliveryRes').innerText = f(pubDeliverySum);
+            document.getElementById('pubCustomsRes').innerText = f(cst);
+
+            animateValue('resTotal', currentTotal, Math.ceil(pubTotal), 600);
+            currentTotal = Math.ceil(pubTotal);
+        }
+
+        // ТАЙМЛАЙН ЗАГАЛЬНИЙ ДЛЯ ОБОХ РЕЖИМІВ
         document.getElementById('timelineUI').style.display = 'flex';
-        document.getElementById('containerPhotoBlock').style.display = 'block'; // Показуємо фото контейнера
-        
         document.getElementById('tlStart').innerText = loc.port;
         document.getElementById('tlEU').innerText = s.end;
         document.getElementById('tlDest').innerText = destName;
-        
         document.getElementById('flagStart').innerText = (loc.port === 'Toronto' || loc.port.includes('Alberta') || loc.port.includes('Halifax')) ? '🇨🇦' : '🇺🇸';
         document.getElementById('flagEU').innerText = (s.end === 'Gdansk') ? '🇵🇱' : '🇱🇹';
     }
