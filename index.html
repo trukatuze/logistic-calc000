@@ -154,11 +154,27 @@
         }
         .line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9rem; color: #cbd5e1; }
         .line:first-child { padding-top: 0; }
-        .orange-line { 
-            color: var(--em-red-light); font-weight: 700; background: rgba(220, 38, 38, 0.05); 
-            margin: 10px -20px 0; padding: 12px 20px; border-top: 1px dashed rgba(220, 38, 38, 0.3); border-bottom: none;
-        }
         
+        /* Блок детального розмитнення */
+        .customs-block {
+            background: rgba(220, 38, 38, 0.03); 
+            margin: 10px -20px 0; 
+            border-top: 1px dashed rgba(220, 38, 38, 0.3); 
+        }
+        .customs-header {
+            color: var(--em-red-light); 
+            font-weight: 700; 
+            padding: 12px 20px 8px; 
+            display: flex; justify-content: space-between;
+        }
+        .sub-line {
+            display: flex; justify-content: space-between;
+            padding: 4px 20px; font-size: 0.8rem; color: #94a3b8;
+        }
+        .sub-line:last-child { padding-bottom: 12px; }
+        .curr-uah { color: #64748b; font-size: 0.9em; margin-right: 6px; font-weight: normal;}
+        .rate-text { color: #64748b; font-size: 0.75rem; text-align: right;}
+
         .total { 
             background: linear-gradient(135deg, var(--asphalt-dark), var(--black-bg)); 
             color: white; padding: 20px; border-radius: 10px; margin-top: 15px; 
@@ -198,7 +214,7 @@
         <div class="tool-name">Logistic Calculator</div>
     </div>
 
-    <div id="dbStatus" class="status">Завантаження бази...</div>
+    <div id="dbStatus" class="status">Підключення до бази та НБУ...</div>
     
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
         <div>
@@ -242,7 +258,30 @@
         <div class="line"><span>Суша по США</span><span id="resLand">$0</span></div>
         <div class="line"><span>Морський фрахт</span><span id="resSea">$0</span></div>
         <div class="line"><span>Комплекс / Доставка</span><span id="resComplex">$0</span></div>
-        <div class="line orange-line"><span>Митні платежі (МВ)</span><span id="resCustoms">$0</span></div>
+        
+        <div class="customs-block">
+            <div class="customs-header">
+                <span>Митні платежі (МВ)</span>
+                <span id="resCustomsTotal">$0</span>
+            </div>
+            <div class="sub-line">
+                <span>├ Ввізне мито (10%)</span>
+                <span id="resDuty">$0</span>
+            </div>
+            <div class="sub-line">
+                <span>├ Акцизний збір</span>
+                <span id="resExcise">$0</span>
+            </div>
+            <div class="sub-line">
+                <span>├ ПДВ (20%)</span>
+                <span id="resVat">$0</span>
+            </div>
+            <div class="sub-line">
+                <span style="color:#64748b">└ Курс НБУ на сьогодні</span>
+                <span class="rate-text" id="resRates">-</span>
+            </div>
+        </div>
+
         <div class="total"><span>РАЗОМ:</span><span id="resTotal">$0</span></div>
         
         <div class="timeline" id="timelineUI" style="display:none;">
@@ -256,14 +295,45 @@
 </div>
 
 <script>
-    // Твоя оригінальна база формул
     const cpS = [{m:49.99,f:1},{m:99.99,f:1},{m:199.99,f:25},{m:299.99,f:60},{m:349.99,f:85},{m:399.99,f:100},{m:449.99,f:125},{m:499.99,f:135},{m:549.99,f:145},{m:599.99,f:155},{m:699.99,f:170},{m:799.99,f:195},{m:899.99,f:215},{m:999.99,f:230},{m:1199.99,f:250},{m:1299.99,f:270},{m:1399.99,f:285},{m:1499.99,f:300},{m:1599.99,f:315},{m:1699.99,f:330},{m:1799.99,f:350},{m:1999.99,f:370},{m:2399.99,f:390},{m:2499.99,f:425},{m:2999.99,f:460},{m:3499.99,f:505},{m:3999.99,f:555},{m:4499.99,f:600},{m:4999.99,f:625},{m:5499.99,f:650},{m:5999.99,f:675},{m:6499.99,f:700},{m:6999.99,f:720},{m:7499.99,f:755},{m:7999.99,f:775},{m:8499.99,f:800},{m:8999.99,f:820},{m:9999.99,f:820},{m:10499.99,f:850},{m:10999.99,f:850},{m:11499.99,f:850},{m:11999.99,f:860},{m:12499.99,f:875},{m:14999.99,f:890},{m:Infinity,p:0.06}];
     const cpM = [{m:49.99,f:30},{m:99.99,f:45},{m:199.99,f:70},{m:299.99,f:105},{m:349.99,f:130},{m:399.99,f:132.5},{m:449.99,f:145},{m:499.99,f:150},{m:549.99,f:165},{m:599.99,f:170},{m:699.99,f:190},{m:799.99,f:225},{m:899.99,f:250},{m:999.99,f:270},{m:1199.99,f:300},{m:1299.99,f:335},{m:1399.99,f:335},{m:1499.99,f:360},{m:1599.99,f:370},{m:1699.99,f:400},{m:1799.99,f:415},{m:1999.99,f:465},{m:2399.99,f:500},{m:2499.99,f:510},{m:2999.99,f:570},{m:3499.99,f:695},{m:3999.99,f:710},{m:4499.99,f:710},{m:4999.99,f:720},{m:5499.99,f:780},{m:5999.99,f:815},{m:6499.99,f:850},{m:6999.99,f:880},{m:7499.99,f:900},{m:7999.99,f:1020},{m:8999.99,f:1025},{m:9999.99,f:1050},{m:Infinity,p:0.105}];
     const iaF = [{m:99.99,f:1},{m:199.99,f:25},{m:299.99,f:60},{m:349.99,f:85},{m:399.99,f:100},{m:449.99,f:125},{m:499.99,f:135},{m:549.99,f:145},{m:599.99,f:155},{m:699.99,f:170},{m:799.99,f:195},{m:899.99,f:215},{m:999.99,f:230},{m:1199.99,f:250},{m:1299.99,f:270},{m:1399.99,f:285},{m:1499.99,f:300},{m:1599.99,f:315},{m:1699.99,f:330},{m:1799.99,f:350},{m:1999.99,f:370},{m:2399.99,f:390},{m:2499.99,f:425},{m:2999.99,f:460},{m:3499.99,f:505},{m:3999.99,f:555},{m:4499.99,f:600},{m:4999.99,f:625},{m:5499.99,f:650},{m:5999.99,f:675},{m:6499.99,f:700},{m:6999.99,f:720},{m:7499.99,f:755},{m:7999.99,f:775},{m:8499.99,f:800},{m:8999.99,f:820},{m:9999.99,f:820},{m:11499.99,f:850},{m:11999.99,f:860},{m:12499.99,f:875},{m:14999.99,f:890},{m:Infinity,p:0.06}];
 
-    let currentTotal = 0; // Для анімації спідометра
+    let currentTotal = 0; 
+    let usdRateNBU = 38.50; // Базовий курс на випадок відсутності інтернету
+    let eurRateNBU = 42.00; 
+    let crossRateEurUsd = 1.08; 
 
-    // Haptic Feedback (Вібрація)
+    // ОТРИМАННЯ АКТУАЛЬНОГО КУРСУ З НБУ
+    async function loadNBURates() {
+        try {
+            const res = await fetch('https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json');
+            const data = await res.json();
+            const usdObj = data.find(c => c.cc === 'USD');
+            const eurObj = data.find(c => c.cc === 'EUR');
+            
+            if (usdObj && eurObj) {
+                usdRateNBU = usdObj.rate;
+                eurRateNBU = eurObj.rate;
+                crossRateEurUsd = eurRateNBU / usdRateNBU;
+                
+                const statusEl = document.getElementById('dbStatus');
+                statusEl.innerText = statusEl.innerText.replace('Підключення до бази та НБУ...', '');
+                statusEl.innerText += ` | НБУ: $1 = ${usdRateNBU.toFixed(2)} ₴`;
+                
+                // Вивід курсу в новий блок митних платежів
+                document.getElementById('resRates').innerText = `$1 = ${usdRateNBU.toFixed(2)} ₴ | €1 = ${eurRateNBU.toFixed(2)} ₴`;
+
+                if (document.getElementById('city').value !== "") {
+                    calc();
+                }
+            }
+        } catch (e) {
+            console.error('Помилка завантаження курсу НБУ:', e);
+            document.getElementById('resRates').innerText = "Офлайн режим (Базовий курс)";
+        }
+    }
+
     function vibro(ms = 30) {
         if(navigator.vibrate) navigator.vibrate(ms);
     }
@@ -280,8 +350,10 @@
     window.onload = () => {
         if (typeof db === 'undefined') { document.getElementById('dbStatus').innerText = "❌ База не знайдена"; return; }
         const keys = [...Object.keys(db.copart), ...Object.keys(db.iaai)].sort();
-        document.getElementById('dbStatus').innerText = "✅ База активна: " + keys.length + " локацій";
+        document.getElementById('dbStatus').innerText = "✅ База: " + keys.length + " локацій";
         document.getElementById('dbStatus').classList.add('success');
+        
+        loadNBURates(); // Підтягуємо курси валют
 
         const cityInput = document.getElementById('city');
         const locDropdown = document.getElementById('locList');
@@ -349,7 +421,6 @@
 
     function triggerCalc() { vibro(20); calc(); }
 
-    // Анімація цифр (Спідометр)
     function animateValue(id, start, end, duration) {
         if (start === end) return;
         const obj = document.getElementById(id);
@@ -364,6 +435,13 @@
         };
         window.requestAnimationFrame(step);
     }
+
+    // Допоміжна функція для виводу подвійної ціни (ГРН + USD)
+    const formatUahUsd = (usdVal) => {
+        const uah = Math.ceil(usdVal * usdRateNBU).toLocaleString('uk-UA');
+        const usd = Math.ceil(usdVal).toLocaleString('uk-UA');
+        return `<span class="curr-uah">(${uah} ₴)</span> $${usd}`;
+    };
 
     function calc() {
         const bid = parseFloat(document.getElementById('bid').value) || 0;
@@ -396,17 +474,23 @@
         const cBasis = bid + fee + shippingBasis;
         let dty = 0, exc = 0, vt = 0, electricFee = 0;
 
+        // РОЗРАХУНОК МИТНИХ ПЛАТЕЖІВ ЗГІДНО З ЗАКОНОДАВСТВОМ У РЕАЛЬНОМУ ЧАСІ
         if (fuel === 'electric') {
-            dty = 0; exc = vol * 1.08; vt = (cBasis + exc) * 0.20; electricFee = 200; 
+            dty = 0; 
+            exc = vol * crossRateEurUsd; 
+            vt = (cBasis + exc) * 0.20; 
+            electricFee = 200; 
         } else if (t === 'Motorcycle') {
             dty = cBasis * 0.10;
             let motoRate = (vol <= 500) ? 0.062 : ((vol <= 800) ? 0.443 : 0.447);
-            exc = (vol / 100) * motoRate * 1.08;
+            exc = (vol / 100) * motoRate * crossRateEurUsd;
             vt = (cBasis + dty + exc) * 0.20;
         } else {
             dty = cBasis * 0.10;
-            let age = Math.min(15, Math.max(1, 2026 - yr));
-            const CUSTOM_RATE = 1.0077; 
+            // АВТОМАТИЧНИЙ ВІК (ПОВНІ РОКИ - 1)
+            let age = Math.min(15, Math.max(1, new Date().getFullYear() - yr - 1));
+            
+            const CUSTOM_RATE = crossRateEurUsd; 
             if (fuel === 'hybrid') exc = 100 * CUSTOM_RATE;
             else if (fuel === 'petrol') {
                 const base = (vol <= 3000) ? 50 : 100;
@@ -417,10 +501,11 @@
             }
             vt = (cBasis + dty + exc) * 0.20;
         }
+        
         const cst = dty + exc + vt;
         const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee;
 
-        // Форматування та вивід
+        // ВИВІД СТАНДАРТНИХ ЗНАЧЕНЬ
         const f = (n) => "$" + Math.ceil(n).toLocaleString('uk-UA');
         document.getElementById('resBid').innerText = f(bid);
         document.getElementById('resFee').innerText = f(fee);
@@ -428,19 +513,21 @@
         document.getElementById('resLand').innerText = f(land);
         document.getElementById('resSea').innerText = f(sea);
         document.getElementById('resComplex').innerText = f(cpx);
-        document.getElementById('resCustoms').innerText = f(cst);
         
-        // Анімація фінальної суми
+        // ВИВІД ДЕТАЛЬНОГО РОЗМИТНЕННЯ З ГРИВНЕЮ
+        document.getElementById('resCustomsTotal').innerHTML = formatUahUsd(cst);
+        document.getElementById('resDuty').innerHTML = formatUahUsd(dty);
+        document.getElementById('resExcise').innerHTML = formatUahUsd(exc);
+        document.getElementById('resVat').innerHTML = formatUahUsd(vt);
+        
         animateValue('resTotal', currentTotal, Math.ceil(finalTotal), 600);
         currentTotal = Math.ceil(finalTotal);
 
-        // Оновлення таймлайну
         document.getElementById('timelineUI').style.display = 'flex';
         document.getElementById('tlStart').innerText = loc.port;
         document.getElementById('tlEU').innerText = s.end;
         document.getElementById('tlDest').innerText = destName;
         
-        // Прапорці для портів
         document.getElementById('flagStart').innerText = (loc.port === 'Toronto' || loc.port.includes('Alberta') || loc.port.includes('Halifax')) ? '🇨🇦' : '🇺🇸';
         document.getElementById('flagEU').innerText = (s.end === 'Gdansk') ? '🇵🇱' : '🇱🇹';
     }
