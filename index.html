@@ -50,6 +50,33 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* PARTNERS ROW */
+        .partners-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .partner-link {
+            text-decoration: none;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+        .partner-link:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        
+        .logo-bidcars { color: #f8fafc; font-weight: 900; font-style: italic; letter-spacing: -0.5px; }
+        .logo-bidcars span { color: #3b82f6; }
+        .logo-copart { color: #3b82f6; font-weight: 900; letter-spacing: -0.5px; }
+        .logo-iaa { color: #dc2626; font-weight: 900; font-style: italic; letter-spacing: -1px; }
+        .logo-impact { color: #ef4444; font-weight: 900; font-style: italic; letter-spacing: -0.5px; }
+
         /* BRAND HEADER - MONOLITHIC */
         .brand-header { 
             text-align: center; 
@@ -155,7 +182,6 @@
         .line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9rem; color: #cbd5e1; }
         .line:first-child { padding-top: 0; }
         
-        /* Блок детального розмитнення */
         .customs-block {
             background: rgba(220, 38, 38, 0.03); 
             margin: 10px -20px 0; 
@@ -184,11 +210,6 @@
         }
         .total span:last-child { color: var(--em-red-light); font-size: 1.5rem; text-shadow: 0 0 10px var(--em-red-glow); }
 
-        .badge { float: right; font-size: 0.7rem; padding: 3px 10px; border-radius: 12px; color: white; display: none; font-weight: 700; letter-spacing: 1px;}
-        .bg-c { background: var(--em-red); box-shadow: 0 0 10px var(--em-red-glow); } 
-        .bg-i { background: var(--asphalt-light); border: 1px solid var(--border-color); }
-
-        /* ВІЗУАЛЬНИЙ ТАЙМЛАЙН */
         .timeline {
             display: flex; align-items: center; justify-content: space-between;
             margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);
@@ -200,10 +221,43 @@
         .tl-line::after { content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); font-size: 12px; }
         .line-ship::after { content: '🚢'; }
         .line-truck::after { content: '🚛'; }
+
+        /* БЛОК ДЛЯ ФОТО КОНТЕЙНЕРА */
+        .container-photo-box {
+            margin-top: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: var(--input-bg);
+            text-align: center;
+            padding-bottom: 8px;
+        }
+        .container-photo-box img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .container-photo-caption {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
 <div class="card">
+    
+    <div class="partners-row">
+        <a href="https://bid.cars/ua/" target="_blank" class="partner-link logo-bidcars">BID<span>CARS</span></a>
+        <a href="https://www.copart.com/lotSearchResults?free=true&query=&qId=7ca33fe5-d792-427a-ad47-ae642e814bd2-1773050327211&index=undefined" target="_blank" class="partner-link logo-copart">Copart</a>
+        <a href="https://www.iaai.com/Search?url=NwI3m7rnm%2b6h5MSWsgeAQnskvqZz3s5Pm1GZsHlc68o%3d" target="_blank" class="partner-link logo-iaa">IAA</a>
+        <a href="https://ca.iaai.com/search" target="_blank" class="partner-link logo-impact">IMPACT</a>
+    </div>
+
     <div class="brand-header">
         <div class="logo-box">
             <div class="brand-em">EM</div>
@@ -227,7 +281,11 @@
         </div>
     </div>
     
-    <label>Локація аукціону <span id="aucBadge" class="badge"></span></label>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px;">
+        <label style="margin-bottom: 0;">Локація аукціону</label>
+        <div id="dynamicAucLogo" style="display: none; font-size: 1.1rem; opacity: 0.9; line-height: 1;"></div>
+    </div>
+    
     <div class="search-container">
         <input type="text" id="city" placeholder="Почніть вводити місто..." autocomplete="off">
         <button type="button" id="clearBtn" class="clear-btn">&times;</button>
@@ -258,6 +316,8 @@
         <div class="line"><span>Суша по США</span><span id="resLand">$0</span></div>
         <div class="line"><span>Морський фрахт</span><span id="resSea">$0</span></div>
         <div class="line"><span>Комплекс / Доставка</span><span id="resComplex">$0</span></div>
+        
+        <div class="line" id="lineEvSurcharge" style="display:none; font-weight:600; color: var(--em-red-light);"><span>EV Surcharge</span><span id="resEvSurcharge">$0</span></div>
         
         <div class="customs-block">
             <div class="customs-header">
@@ -291,6 +351,11 @@
             <div class="tl-line line-truck"></div>
             <div class="tl-step"><span class="tl-icon">🇺🇦</span><span class="tl-text" id="tlDest">Львів</span></div>
         </div>
+
+        <div id="containerPhotoBlock" class="container-photo-box" style="display:none;">
+            <img src="container.jpg" alt="Завантаження в контейнер">
+            <div class="container-photo-caption">Можливе завантаження в контейнер</div>
+        </div>
     </div>
 </div>
 
@@ -300,11 +365,10 @@
     const iaF = [{m:99.99,f:1},{m:199.99,f:25},{m:299.99,f:60},{m:349.99,f:85},{m:399.99,f:100},{m:449.99,f:125},{m:499.99,f:135},{m:549.99,f:145},{m:599.99,f:155},{m:699.99,f:170},{m:799.99,f:195},{m:899.99,f:215},{m:999.99,f:230},{m:1199.99,f:250},{m:1299.99,f:270},{m:1399.99,f:285},{m:1499.99,f:300},{m:1599.99,f:315},{m:1699.99,f:330},{m:1799.99,f:350},{m:1999.99,f:370},{m:2399.99,f:390},{m:2499.99,f:425},{m:2999.99,f:460},{m:3499.99,f:505},{m:3999.99,f:555},{m:4499.99,f:600},{m:4999.99,f:625},{m:5499.99,f:650},{m:5999.99,f:675},{m:6499.99,f:700},{m:6999.99,f:720},{m:7499.99,f:755},{m:7999.99,f:775},{m:8499.99,f:800},{m:8999.99,f:820},{m:9999.99,f:820},{m:11499.99,f:850},{m:11999.99,f:860},{m:12499.99,f:875},{m:14999.99,f:890},{m:Infinity,p:0.06}];
 
     let currentTotal = 0; 
-    let usdRateNBU = 38.50; // Базовий курс на випадок відсутності інтернету
+    let usdRateNBU = 38.50; 
     let eurRateNBU = 42.00; 
     let crossRateEurUsd = 1.08; 
 
-    // ОТРИМАННЯ АКТУАЛЬНОГО КУРСУ З НБУ
     async function loadNBURates() {
         try {
             const res = await fetch('https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json');
@@ -321,7 +385,6 @@
                 statusEl.innerText = statusEl.innerText.replace('Підключення до бази та НБУ...', '');
                 statusEl.innerText += ` | НБУ: $1 = ${usdRateNBU.toFixed(2)} ₴`;
                 
-                // Вивід курсу в новий блок митних платежів
                 document.getElementById('resRates').innerText = `$1 = ${usdRateNBU.toFixed(2)} ₴ | €1 = ${eurRateNBU.toFixed(2)} ₴`;
 
                 if (document.getElementById('city').value !== "") {
@@ -329,7 +392,7 @@
                 }
             }
         } catch (e) {
-            console.error('Помилка завантаження курсу НБУ:', e);
+            console.error('Помилка НБУ:', e);
             document.getElementById('resRates').innerText = "Офлайн режим (Базовий курс)";
         }
     }
@@ -353,7 +416,7 @@
         document.getElementById('dbStatus').innerText = "✅ База: " + keys.length + " локацій";
         document.getElementById('dbStatus').classList.add('success');
         
-        loadNBURates(); // Підтягуємо курси валют
+        loadNBURates();
 
         const cityInput = document.getElementById('city');
         const locDropdown = document.getElementById('locList');
@@ -394,8 +457,9 @@
             cityInput.value = '';
             clearBtn.style.display = 'none';
             locDropdown.style.display = 'none';
-            document.getElementById('aucBadge').style.display = 'none';
+            document.getElementById('dynamicAucLogo').style.display = 'none';
             document.getElementById('timelineUI').style.display = 'none';
+            document.getElementById('containerPhotoBlock').style.display = 'none';
             cityInput.focus();
         });
 
@@ -407,11 +471,21 @@
     function handleLoc() {
         const city = document.getElementById('city').value;
         const loc = db.copart[city] || db.iaai[city];
-        const bdg = document.getElementById('aucBadge');
-        if (!loc) { bdg.style.display = 'none'; return; }
-        bdg.style.display = 'inline-block';
-        if (db.copart[city]) { bdg.innerText = "COPART"; bdg.className = "badge bg-c"; }
-        else { bdg.innerText = "IAAI"; bdg.className = "badge bg-i"; }
+        const dynLogo = document.getElementById('dynamicAucLogo');
+        
+        if (!loc) { 
+            dynLogo.style.display = 'none'; 
+            document.getElementById('containerPhotoBlock').style.display = 'none';
+            return; 
+        }
+        
+        dynLogo.style.display = 'block';
+        if (db.copart[city]) { 
+            dynLogo.innerHTML = '<span class="logo-copart">Copart</span>'; 
+        } else { 
+            dynLogo.innerHTML = '<span class="logo-iaa">IAA</span>'; 
+        }
+        
         const s = seaRates[loc.port];
         const dest = document.getElementById('destination');
         dest.innerHTML = '';
@@ -436,7 +510,6 @@
         window.requestAnimationFrame(step);
     }
 
-    // Допоміжна функція для виводу подвійної ціни (ГРН + USD)
     const formatUahUsd = (usdVal) => {
         const uah = Math.ceil(usdVal * usdRateNBU).toLocaleString('uk-UA');
         const usd = Math.ceil(usdVal).toLocaleString('uk-UA');
@@ -472,22 +545,30 @@
         
         const shippingBasis = (t === 'Motorcycle') ? 800 : 1600;
         const cBasis = bid + fee + shippingBasis;
+        
         let dty = 0, exc = 0, vt = 0, electricFee = 0;
 
-        // РОЗРАХУНОК МИТНИХ ПЛАТЕЖІВ ЗГІДНО З ЗАКОНОДАВСТВОМ У РЕАЛЬНОМУ ЧАСІ
+        if (fuel === 'electric' || fuel === 'hybrid') {
+            electricFee = 200;
+            document.getElementById('lineEvSurcharge').style.display = 'flex';
+            document.getElementById('resEvSurcharge').innerText = "$" + electricFee;
+        } else {
+            electricFee = 0;
+            document.getElementById('lineEvSurcharge').style.display = 'none';
+        }
+
+        // МИТНІ ПЛАТЕЖІ (Виправлено мотоцикли та ПДВ на електро)
         if (fuel === 'electric') {
             dty = 0; 
             exc = vol * crossRateEurUsd; 
-            vt = (cBasis + exc) * 0.20; 
-            electricFee = 200; 
+            vt = (cBasis + dty + exc) * 0.20; 
         } else if (t === 'Motorcycle') {
             dty = cBasis * 0.10;
             let motoRate = (vol <= 500) ? 0.062 : ((vol <= 800) ? 0.443 : 0.447);
-            exc = (vol / 100) * motoRate * crossRateEurUsd;
+            exc = vol * motoRate * crossRateEurUsd; // Виправлено формулу (без /100)
             vt = (cBasis + dty + exc) * 0.20;
         } else {
             dty = cBasis * 0.10;
-            // АВТОМАТИЧНИЙ ВІК (ПОВНІ РОКИ - 1)
             let age = Math.min(15, Math.max(1, new Date().getFullYear() - yr - 1));
             
             const CUSTOM_RATE = crossRateEurUsd; 
@@ -505,7 +586,6 @@
         const cst = dty + exc + vt;
         const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee;
 
-        // ВИВІД СТАНДАРТНИХ ЗНАЧЕНЬ
         const f = (n) => "$" + Math.ceil(n).toLocaleString('uk-UA');
         document.getElementById('resBid').innerText = f(bid);
         document.getElementById('resFee').innerText = f(fee);
@@ -514,7 +594,6 @@
         document.getElementById('resSea').innerText = f(sea);
         document.getElementById('resComplex').innerText = f(cpx);
         
-        // ВИВІД ДЕТАЛЬНОГО РОЗМИТНЕННЯ З ГРИВНЕЮ
         document.getElementById('resCustomsTotal').innerHTML = formatUahUsd(cst);
         document.getElementById('resDuty').innerHTML = formatUahUsd(dty);
         document.getElementById('resExcise').innerHTML = formatUahUsd(exc);
@@ -524,6 +603,8 @@
         currentTotal = Math.ceil(finalTotal);
 
         document.getElementById('timelineUI').style.display = 'flex';
+        document.getElementById('containerPhotoBlock').style.display = 'block'; // Показуємо фото контейнера
+        
         document.getElementById('tlStart').innerText = loc.port;
         document.getElementById('tlEU').innerText = s.end;
         document.getElementById('tlDest').innerText = destName;
