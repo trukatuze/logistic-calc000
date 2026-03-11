@@ -163,6 +163,7 @@
         .info-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; font-weight: 500; color: #cbd5e1; }
         .info-line span:last-child { color: var(--copart-blue); font-weight: 700; text-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
 
+        /* ОНОВЛЕНИЙ КРУПНИЙ ТАЙМЛАЙН */
         .timeline { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
         .tl-step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; z-index: 2; }
         .tl-icon { font-size: 2.5rem; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.4); }
@@ -173,41 +174,13 @@
         .line-truck::after { content: '🚛'; }
         .line-train::after { content: '🚆'; }
 
-        /* КОНВЕРТЕР ВАЛЮТ (ВИПРАВЛЕНО ВИРІВНЮВАННЯ) */
+        /* КОНВЕРТЕР ВАЛЮТ */
         .converter-block { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-top: 20px; }
         .converter-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 10px; text-align: center; }
-        
-        .converter-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr 1fr; 
-            gap: 10px; 
-            align-items: flex-end; /* Вирівнювання всього блоку по нижньому краю */
-        }
-        .converter-grid div { 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: flex-end; 
-            text-align: center; 
-            height: 100%; 
-        }
-        .converter-grid label { 
-            font-size: 0.6rem; 
-            color: #cbd5e1; 
-            margin-bottom: 6px; 
-            line-height: 1.15; 
-            display: block; 
-        }
-        .converter-grid input { 
-            padding: 8px; 
-            font-size: 0.95rem; 
-            text-align: center; 
-            margin-bottom: 0; 
-            background: rgba(0,0,0,0.3); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            font-weight: 700; 
-            width: 100%; 
-            box-sizing: border-box; 
-        }
+        .converter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; align-items: flex-end; }
+        .converter-grid div { display: flex; flex-direction: column; justify-content: flex-end; text-align: center; height: 100%; }
+        .converter-grid label { font-size: 0.6rem; color: #cbd5e1; margin-bottom: 6px; line-height: 1.15; display: block; }
+        .converter-grid input { padding: 8px; font-size: 0.95rem; text-align: center; margin-bottom: 0; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); font-weight: 700; width: 100%; box-sizing: border-box; }
         .converter-grid input:focus { border-color: var(--copart-blue); box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
 
         .container-photo-box { margin-top: 20px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: var(--input-bg); text-align: center; padding-bottom: 8px; }
@@ -267,7 +240,7 @@
     
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px;">
         <label style="margin-bottom: 0;">Локація аукціону</label>
-        <div id="dynamicAucLogo" style="display: none; font-size: 1.1rem; opacity: 0.9; line-height: 1;"></div>
+        <div id="dynamicAucLogo" style="display: none; font-size: 1.1rem; opacity: 0.9; line-height: 1; text-align: right;"></div>
     </div>
     
     <div class="search-container">
@@ -310,6 +283,7 @@
         
         <div id="publicLines">
             <div class="line"><span id="pubDeliveryLabel">Повна вартість з доставкою</span><span id="pubDeliveryRes">$0</span></div>
+
             <div class="line orange-line" style="display:flex; justify-content:space-between;">
                 <span id="pubCustomsLabel">Митні платежі (МВ)</span><span id="pubCustomsRes">$0</span>
             </div>
@@ -319,8 +293,12 @@
         <div id="dealerLines" style="display:none;">
             <div class="line"><span>Вартість лоту</span><span id="resBid">$0</span></div>
             <div class="line"><span>Аукціонний збір</span><span id="resFee">$0</span></div>
+            
+            <div class="line" id="dlrCanTaxLine" style="display:none; font-weight:600; color: #f8fafc;"><span>Податок Канади (<span id="canTaxPercent">0</span>%)</span><span id="dlrCanTaxRes">$0</span></div>
+            <div class="line" id="dlrCanDocLine" style="display:none; font-weight:600; color: #f8fafc;"><span>Канадські документи</span><span id="dlrCanDocRes">$170</span></div>
+
             <div class="line"><span>Трансфер (SWIFT)</span><span id="resSwift">$0</span></div>
-            <div class="line"><span>Суша по США</span><span id="resLand">$0</span></div>
+            <div class="line"><span>Суша по США/Канаді</span><span id="resLand">$0</span></div>
             <div class="line"><span>Морський фрахт</span><span id="resSea">$0</span></div>
             <div class="line"><span id="complexLabel">Комплекс / Доставка</span><span id="resComplex">$0</span></div>
             
@@ -509,7 +487,11 @@
 
     window.onload = () => {
         if (typeof db === 'undefined') { document.getElementById('dbStatus').innerText = "❌ База не знайдена"; return; }
-        const keys = [...Object.keys(db.copart), ...Object.keys(db.iaai)].sort();
+        
+        let keys = [...Object.keys(db.copart), ...Object.keys(db.iaai)];
+        if (db.canada) keys = [...keys, ...Object.keys(db.canada)];
+        keys.sort();
+
         document.getElementById('dbStatus').innerText = "✅ База: " + keys.length + " локацій";
         document.getElementById('dbStatus').classList.add('success');
         
@@ -556,6 +538,10 @@
             document.getElementById('dynamicAucLogo').style.display = 'none';
             document.getElementById('timelineUI').style.display = 'none';
             document.getElementById('containerPhotoBlock').style.display = 'none';
+            
+            document.getElementById('dlrCanTaxLine').style.display = 'none';
+            document.getElementById('dlrCanDocLine').style.display = 'none';
+            
             cityInput.focus();
         });
 
@@ -566,7 +552,7 @@
 
     function handleLoc() {
         const city = document.getElementById('city').value;
-        const loc = db.copart[city] || db.iaai[city];
+        const loc = db.copart[city] || db.iaai[city] || (db.canada && db.canada[city]);
         const dynLogo = document.getElementById('dynamicAucLogo');
         
         if (!loc) { 
@@ -576,13 +562,21 @@
         }
         
         dynLogo.style.display = 'block';
-        if (db.copart[city]) { dynLogo.innerHTML = '<span class="logo-copart">Copart</span>'; } 
-        else { dynLogo.innerHTML = '<span class="logo-iaa">IAA</span>'; }
+        
+        if (db.canada && db.canada[city]) {
+            dynLogo.innerHTML = '<span class="logo-copart">Copart</span> & <span class="logo-impact">IMPACT</span>';
+        } else if (db.copart[city]) { 
+            dynLogo.innerHTML = '<span class="logo-copart">Copart</span>'; 
+        } else { 
+            dynLogo.innerHTML = '<span class="logo-iaa">IAA</span>'; 
+        }
         
         const s = seaRates[loc.port];
-        const dest = document.getElementById('destination');
-        dest.innerHTML = '';
-        complexRates[s.end].forEach(d => { let o = document.createElement('option'); o.value = d.price; o.text = d.name + " ($" + d.price + ")"; dest.appendChild(o); });
+        if (s) {
+            const dest = document.getElementById('destination');
+            dest.innerHTML = '';
+            complexRates[s.end].forEach(d => { let o = document.createElement('option'); o.value = d.price; o.text = d.name + " ($" + d.price + ")"; dest.appendChild(o); });
+        }
         calc();
     }
 
@@ -626,19 +620,19 @@
         
         let destNameFull = "";
         let timelineCity = "";
-        if (destSelect.options.length > 0 && destSelect.selectedIndex >= 0) {
+        if (destSelect && destSelect.options.length > 0 && destSelect.selectedIndex >= 0) {
             let rawDestName = destSelect.options[destSelect.selectedIndex].text;
             destNameFull = rawDestName.split(' ($')[0]; 
             timelineCity = rawDestName.split(' (')[0]; 
         }
         
-        let cpx = parseFloat(destSelect.value) || 0;
+        let cpx = destSelect ? (parseFloat(destSelect.value) || 0) : 0;
         if (t === 'Pickup' && cpx > 0) cpx += 100;
 
-        const loc = db.copart[city] || db.iaai[city];
+        const loc = db.copart[city] || db.iaai[city] || (db.canada && db.canada[city]);
         if (!loc) return;
         
-        const s = seaRates[loc.port];
+        const s = seaRates[loc.port] || { end: "Gdansk", Car: 0, SUV: 0, Pickup: 0, Motorcycle: 0 };
         const land = (loc[t] === "Call" || !loc[t]) ? (loc["Car"] || 0) : loc[t];
         const sea = s[t] || s["Car"] || 0;
         
@@ -648,14 +642,24 @@
         fee += 300; 
         if (db.iaai[city]) fee += 20;
 
-        const sw = ((bid + fee + land + sea) * 0.025 + 70);
+        let isCanada = !!(db.canada && db.canada[city]);
+        let canTax = 0;
+        let canDoc = 0;
+        
+        if (isCanada) {
+            canTax = (bid + fee) * loc.tax;
+            canDoc = 170;
+        }
+
+        const sw = ((bid + fee + land + sea + canTax + canDoc) * 0.025 + 70);
 
         const fuel = document.getElementById('fuel').value;
         const yr = parseInt(document.getElementById('year').value) || 2026;
         const vol = parseFloat(document.getElementById('vol').value) || 0;
         
+        // МИТНА БАЗА (Додаємо Податок Канади, якщо він є. Документи НЕ додаємо до мита)
         const shippingBasis = (t === 'Motorcycle') ? 800 : 1600;
-        const cBasis = bid + fee + shippingBasis;
+        const cBasis = bid + fee + shippingBasis + canTax; 
         const cBasisUah = cBasis * usdRateNBU;
         
         let dty = 0, exc = 0, vt = 0, electricFee = 0;
@@ -739,16 +743,28 @@
                 document.getElementById('dlrFirmLine').style.display = 'none';
             }
             
+            if (isCanada) {
+                document.getElementById('dlrCanTaxLine').style.display = 'flex';
+                document.getElementById('dlrCanDocLine').style.display = 'flex';
+                document.getElementById('canTaxPercent').innerText = (loc.tax * 100).toFixed(0);
+                document.getElementById('dlrCanTaxRes').innerText = f(canTax);
+                document.getElementById('dlrCanDocRes').innerText = f(canDoc);
+            } else {
+                document.getElementById('dlrCanTaxLine').style.display = 'none';
+                document.getElementById('dlrCanDocLine').style.display = 'none';
+            }
+            
             document.getElementById('resCustomsTotal').innerHTML = formatUahUsd(cst);
             document.getElementById('resDuty').innerHTML = formatUahUsd(dty);
             document.getElementById('resExcise').innerHTML = formatUahUsd(exc);
             document.getElementById('resVat').innerHTML = formatUahUsd(vt);
             
-            const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee + firmFee;
+            const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee + firmFee + canTax + canDoc;
             animateValue('resTotal', currentTotal, Math.ceil(finalTotal), 600);
             currentTotal = Math.ceil(finalTotal);
 
         } else {
+            // PUBLIC MODE (Клієнтський)
             document.getElementById('dealerLines').style.display = 'none';
             document.getElementById('publicLines').style.display = 'block';
             document.getElementById('containerPhotoBlock').style.display = 'none';
@@ -765,8 +781,9 @@
                 document.getElementById('pubFirmLine').style.display = 'none';
             }
 
+            // Сумуємо всі витрати разом (Податок і Доки приховано плюсуються сюди)
             const rndMarkup = 50 + ((bid + vol + cpx) % 49);
-            const pubDeliverySum = bid + fee + sw + land + sea + cpx + electricFee + 300 + rndMarkup;
+            const pubDeliverySum = bid + fee + sw + land + sea + cpx + electricFee + 300 + rndMarkup + canTax + canDoc;
             
             const pubTotal = pubDeliverySum + cst + firmFee;
 
@@ -781,10 +798,8 @@
         document.getElementById('tlStart').innerText = loc.port;
         document.getElementById('tlEU').innerText = s.end;
         
-        // Відображаємо тільки назву міста без дужок на таймлайні
-        document.getElementById('tlDest').innerText = timelineCity;
+        document.getElementById('tlDest').innerText = timelineCity; 
         
-        // Зберігаємо український прапорець
         document.getElementById('flagUA').innerText = '🇺🇦';
 
         document.getElementById('flagStart').innerText = (loc.port === 'Toronto' || loc.port.includes('Alberta') || loc.port.includes('Halifax')) ? '🇨🇦' : '🇺🇸';
