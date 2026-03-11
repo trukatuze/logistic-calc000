@@ -224,16 +224,7 @@ const db = {
     "PASCO - Washington - Copart": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Seattle" },
     "PORTLAND NORTH - Oregon - Copart": { "Car": 300, "SUV": 300, "Motorcycle": 300, "Pickup": 500, "port": "Seattle" },
     "PORTLAND SOUTH - Oregon - Copart": { "Car": 350, "SUV": 350, "Motorcycle": 350, "Pickup": 550, "port": "Seattle" },
-    "SPOKANE - Washington - Copart": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Seattle" },
-    "CALGARY - Alberta - Copart": { "Car": 1500, "SUV": 1500, "Motorcycle": 1500, "Pickup": 1700, "port": "Toronto" },
-    "EDMONTON - Alberta - Copart": { "Car": 1500, "SUV": 1500, "Motorcycle": 1500, "Pickup": 1700, "port": "Toronto" },
-    "HALIFAX - Nova Scotia - Copart": { "Car": 1250, "SUV": 1250, "Motorcycle": 1250, "Pickup": 1450, "port": "Toronto" },
-    "LONDON - Ontario - Copart": { "Car": 300, "SUV": 300, "Motorcycle": 300, "Pickup": 500, "port": "Toronto" },
-    "MONCTON - New Brunswick - Copart": { "Car": 1325, "SUV": 1325, "Motorcycle": 1325, "Pickup": 1525, "port": "Toronto" },
-    "MONTREAL - Quebec - Copart": { "Car": 550, "SUV": 550, "Motorcycle": 550, "Pickup": 750, "port": "Toronto" },
-    "OTTAWA - Ontario - Copart": { "Car": 525, "SUV": 525, "Motorcycle": 525, "Pickup": 725, "port": "Toronto" },
-    "ST. JOHN'S - Newfoundland and Lab - Copart": { "Car": 1900, "SUV": 1900, "Motorcycle": 1900, "Pickup": 2100, "port": "Toronto" },
-    "TORONTO - Ontario - Copart": { "Car": 275, "SUV": 275, "Motorcycle": 275, "Pickup": 475, "port": "Toronto" }
+    "SPOKANE - Washington - Copart": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Seattle" }
   },
   "iaai": {
     "FORT MYERS - Florida - IAAI": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Savannah" },
@@ -432,6 +423,17 @@ const db = {
     "Portland West - Oregon - IAAI": { "Car": 300, "SUV": 300, "Motorcycle": 300, "Pickup": 500, "port": "Seattle" },
     "SEATTLE - Washington - IAAI": { "Car": 225, "SUV": 225, "Motorcycle": 225, "Pickup": 425, "port": "Seattle" },
     "SPOKANE - Washington - IAAI": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Seattle" }
+  },
+  "canada": {
+    "CALGARY - Alberta - Copart/Impact": { "Car": 1500, "SUV": 1500, "Motorcycle": 1500, "Pickup": 1700, "port": "Toronto", "tax": 0.05 },
+    "EDMONTON - Alberta - Copart/Impact": { "Car": 1500, "SUV": 1500, "Motorcycle": 1500, "Pickup": 1700, "port": "Toronto", "tax": 0.05 },
+    "HALIFAX - Nova Scotia - Copart/Impact": { "Car": 1250, "SUV": 1250, "Motorcycle": 1250, "Pickup": 1450, "port": "Toronto", "tax": 0.15 },
+    "LONDON - Ontario - Copart/Impact": { "Car": 300, "SUV": 300, "Motorcycle": 300, "Pickup": 500, "port": "Toronto", "tax": 0.13 },
+    "MONCTON - New Brunswick - Copart/Impact": { "Car": 1325, "SUV": 1325, "Motorcycle": 1325, "Pickup": 1525, "port": "Toronto", "tax": 0.15 },
+    "MONTREAL - Quebec - Copart/Impact": { "Car": 550, "SUV": 550, "Motorcycle": 550, "Pickup": 750, "port": "Toronto", "tax": 0.15 },
+    "OTTAWA - Ontario - Copart/Impact": { "Car": 525, "SUV": 525, "Motorcycle": 525, "Pickup": 725, "port": "Toronto", "tax": 0.13 },
+    "ST. JOHN'S - Newfoundland - Copart/Impact": { "Car": 1900, "SUV": 1900, "Motorcycle": 1900, "Pickup": 2100, "port": "Toronto", "tax": 0.15 },
+    "TORONTO - Ontario - Copart/Impact": { "Car": 275, "SUV": 275, "Motorcycle": 275, "Pickup": 475, "port": "Toronto", "tax": 0.13 }
   }
 };
 
