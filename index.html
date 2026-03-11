@@ -26,25 +26,14 @@
             font-family: 'Outfit', sans-serif; 
             background: radial-gradient(circle at top center, var(--asphalt-light), var(--black-bg)); 
             color: var(--text-main);
-            display: flex; 
-            justify-content: center; 
-            padding: 20px 10px; 
-            margin: 0; 
-            min-height: 100vh;
+            display: flex; justify-content: center; padding: 20px 10px; margin: 0; min-height: 100vh;
         }
 
         .card { 
-            background: rgba(15, 23, 42, 0.75); 
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            width: 100%; 
-            max-width: 450px; 
-            border-radius: 16px; 
-            padding: 30px 25px; 
+            background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            width: 100%; max-width: 450px; border-radius: 16px; padding: 30px 25px; 
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05); 
-            border: 1px solid rgba(255,255,255,0.05);
-            animation: fadeIn 0.5s ease-out;
-            position: relative;
+            border: 1px solid rgba(255,255,255,0.05); animation: fadeIn 0.5s ease-out; position: relative;
         }
 
         @keyframes fadeIn {
@@ -66,9 +55,7 @@
         .logo-impact { color: #ef4444; font-weight: 900; font-style: italic; letter-spacing: -0.5px; }
 
         /* BRAND HEADER */
-        .brand-header { 
-            text-align: center; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center;
-        }
+        .brand-header { text-align: center; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; }
         .logo-box { display: inline-flex; flex-direction: column; align-items: center; }
         .brand-em { 
             font-size: 5.5rem; font-weight: 900; line-height: 0.8; color: var(--em-red); 
@@ -138,6 +125,22 @@
         .result-item:last-child { border-bottom: none; }
         select { background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto; }
 
+        /* СПЕЦ ПОЛЕ З USD */
+        .input-with-currency { position: relative; }
+        .input-with-currency input { padding-right: 50px; }
+        .currency-indicator { position: absolute; right: 15px; top: 40%; transform: translateY(-50%); color: var(--text-muted); font-weight: 700; font-size: 0.9rem; pointer-events: none; }
+
+        /* ТУМБЛЕРИ (СВІТЧІ) */
+        .toggles-container { margin: 15px 0 20px; display: flex; flex-direction: column; gap: 10px; }
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .toggle-row span { font-size: 0.85rem; font-weight: 600; color: #cbd5e1; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; margin: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--input-bg); border: 1px solid var(--border-color); transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: var(--text-muted); transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--copart-blue); border-color: var(--copart-blue); }
+        input:checked + .slider:before { transform: translateX(20px); background-color: white; }
+
         /* Чек результатів */
         .results { background: rgba(0,0,0,0.4); border-radius: 12px; padding: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.95rem; font-weight: 400; color: #cbd5e1; }
@@ -155,31 +158,37 @@
         .total { background: linear-gradient(135deg, var(--asphalt-dark), var(--black-bg)); color: white; padding: 20px; border-radius: 10px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 1.25rem; border: 1px solid rgba(220, 38, 38, 0.3); box-shadow: 0 0 20px rgba(220, 38, 38, 0.15); }
         .total span:last-child { color: var(--em-red-light); font-size: 1.6rem; letter-spacing: -0.5px; text-shadow: 0 0 10px var(--em-red-glow); }
 
-        /* БЛОК ДОДАТКОВИХ ВИТРАТ (СИНІЙ) */
-        .extra-fees-block { background: rgba(59, 130, 246, 0.05); border: 1px dashed rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 12px 20px; margin-top: 15px; }
+        .extra-fees-block { background: rgba(59, 130, 246, 0.05); border: 1px dashed rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 12px 20px; margin-top: 15px; position: relative; }
+        .not-included-tag { display: block; font-size: 0.7rem; color: var(--copart-blue); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; text-align: center; }
         .info-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; font-weight: 500; color: #cbd5e1; }
         .info-line span:last-child { color: var(--copart-blue); font-weight: 700; text-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
 
-        .timeline { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .tl-step { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
-        .tl-icon { font-size: 1.5rem; }
-        .tl-text { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-align: center;}
-        .tl-line { flex: 1; height: 2px; background: rgba(255,255,255,0.1); position: relative; margin: 0 10px; top: -10px;}
-        .tl-line::after { content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); font-size: 12px; }
+        /* ОНОВЛЕНИЙ КРУПНИЙ ТАЙМЛАЙН */
+        .timeline { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .tl-step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; z-index: 2; }
+        .tl-icon { font-size: 2.5rem; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+        .tl-text { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-align: center; letter-spacing: 0.5px; text-transform: uppercase; }
+        .tl-line { flex: 1; height: 2px; background: rgba(255,255,255,0.15); position: relative; margin: 0 5px; top: -14px; z-index: 1;}
+        .tl-line::after { content: ''; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 1.8rem; text-shadow: 0 4px 8px rgba(0,0,0,0.3); }
         .line-ship::after { content: '🚢'; }
         .line-truck::after { content: '🚛'; }
+        .line-train::after { content: '🚆'; }
+
+        /* КОНВЕРТЕР ВАЛЮТ */
+        .converter-block { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-top: 20px; }
+        .converter-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 10px; text-align: center; }
+        .converter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .converter-grid div { text-align: center; }
+        .converter-grid label { font-size: 0.65rem; color: #cbd5e1; margin-bottom: 4px; }
+        .converter-grid input { padding: 8px; font-size: 0.95rem; text-align: center; margin-bottom: 0; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); font-weight: 700; }
+        .converter-grid input:focus { border-color: var(--copart-blue); box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
 
         .container-photo-box { margin-top: 20px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: var(--input-bg); text-align: center; padding-bottom: 8px; }
         .container-photo-box img { width: 100%; height: auto; display: block; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .container-photo-caption { font-size: 0.7rem; color: var(--text-muted); margin-top: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
         .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); border-color: red;}
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); border-color: red;}
-            40%, 60% { transform: translate3d(4px, 0, 0); border-color: red;}
-        }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); border-color: red;} 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); border-color: red;} 40%, 60% { transform: translate3d(4px, 0, 0); border-color: red;} }
     </style>
 </head>
 <body>
@@ -254,8 +263,21 @@
     <label>Місто отримання</label>
     <select id="destination" onchange="triggerCalc()"></select>
     
-    <label>Ставка на аукціоні ($)</label>
-    <input type="number" id="bid" placeholder="0" oninput="triggerCalc()">
+    <label>Ставка на аукціоні</label>
+    <div class="input-with-currency">
+        <input type="number" id="bid" placeholder="0" oninput="triggerCalc()">
+        <span class="currency-indicator">USD</span>
+    </div>
+
+    <div class="toggles-container">
+        <div class="toggle-row">
+            <span>Фірма (юр. особа)</span>
+            <label class="switch">
+                <input type="checkbox" id="toggleFirm" onchange="triggerCalc()">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
 
     <div class="results">
         
@@ -264,6 +286,7 @@
             <div class="line orange-line" style="display:flex; justify-content:space-between;">
                 <span id="pubCustomsLabel">Митні платежі (МВ)</span><span id="pubCustomsRes">$0</span>
             </div>
+            <div class="line" id="pubFirmLine" style="display:none; color:var(--copart-blue);"><span>Юр. особа</span><span id="pubFirmRes">$60</span></div>
         </div>
 
         <div id="dealerLines" style="display:none;">
@@ -273,8 +296,11 @@
             <div class="line"><span>Суша по США</span><span id="resLand">$0</span></div>
             <div class="line"><span>Морський фрахт</span><span id="resSea">$0</span></div>
             <div class="line"><span id="complexLabel">Комплекс / Доставка</span><span id="resComplex">$0</span></div>
+            
             <div class="line" id="lineEvSurcharge" style="display:none; font-weight:600; color: var(--em-red-light);"><span style="color:var(--em-red-light)">EV Surcharge</span><span id="resEvSurcharge" style="color:var(--em-red-light)">$0</span></div>
             
+            <div class="line" id="dlrFirmLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Юр. особа</span><span id="dlrFirmRes" style="color:var(--copart-blue)">$60</span></div>
+
             <div class="customs-block">
                 <div class="customs-header">
                     <span id="customsTitle">Митні платежі (МВ)</span>
@@ -282,7 +308,7 @@
                 </div>
                 <div class="sub-line"><span>├ Ввізне мито (10%)</span><span id="resDuty">$0</span></div>
                 <div class="sub-line"><span>├ Акцизний збір</span><span id="resExcise">$0</span></div>
-                <div class="sub-line"><span>├ ПДВ (20%)</span><span id="resVat">$0</span></div>
+                <div class="sub-line"><span id="vatLabel">├ ПДВ (20%)</span><span id="resVat">$0</span></div>
                 <div class="sub-line">
                     <span style="color:#64748b">└ Курс НБУ на сьогодні</span>
                     <span class="rate-text" id="resRates">-</span>
@@ -293,6 +319,7 @@
         <div class="total"><span>РАЗОМ:</span><span id="resTotal">$0</span></div>
 
         <div class="extra-fees-block">
+            <span class="not-included-tag">(! не входить у вартість)</span>
             <div class="info-line">
                 <span>Орієнтовний перший облік (ПФУ+МРЕВ)</span>
                 <span id="resPfInfo">$0</span>
@@ -311,14 +338,33 @@
             <div class="tl-step"><span class="tl-icon" id="flagStart">🇺🇸</span><span class="tl-text" id="tlStart">Port</span></div>
             <div class="tl-line line-ship"></div>
             <div class="tl-step"><span class="tl-icon" id="flagEU">🇪🇺</span><span class="tl-text" id="tlEU">Port</span></div>
-            <div class="tl-line line-truck"></div>
+            <div class="tl-line line-truck" id="euToUaLine"></div>
             <div class="tl-step"><span class="tl-icon">🇺🇦</span><span class="tl-text" id="tlDest">Львів</span></div>
+        </div>
+
+        <div class="converter-block">
+            <div class="converter-title">Конвертер валют (Актуально НБУ)</div>
+            <div class="converter-grid">
+                <div>
+                    <label>Долар (USD)</label>
+                    <input type="number" id="convUsd" placeholder="0" oninput="convertCurrency('USD')">
+                </div>
+                <div>
+                    <label>Канадський (CAD)</label>
+                    <input type="number" id="convCad" placeholder="0" oninput="convertCurrency('CAD')">
+                </div>
+                <div>
+                    <label>Гривня (UAH)</label>
+                    <input type="number" id="convUah" placeholder="0" oninput="convertCurrency('UAH')">
+                </div>
+            </div>
         </div>
 
         <div id="containerPhotoBlock" class="container-photo-box" style="display:none;">
             <img src="container.jpg" alt="Завантаження в контейнер">
             <div class="container-photo-caption">Можливе завантаження в контейнер</div>
         </div>
+
     </div>
 </div>
 
@@ -330,6 +376,7 @@
     let currentTotal = 0; 
     let usdRateNBU = 38.50; 
     let eurRateNBU = 42.00; 
+    let cadRateNBU = 28.50; 
     let crossRateEurUsd = 1.08; 
     
     let currentMode = 'public'; 
@@ -354,11 +401,9 @@
         if(pinInput.value === '991') {
             vibro([30, 50, 30]); 
             closeDealerModal();
-            
             currentMode = 'dealer';
             document.getElementById('btnDealer').classList.add('active');
             document.getElementById('btnPublic').classList.remove('active');
-            
             calc(); 
         } else {
             vibro(100); 
@@ -379,16 +424,37 @@
         calc(); 
     }
 
+    function convertCurrency(source) {
+        const valUsd = parseFloat(document.getElementById('convUsd').value) || 0;
+        const valCad = parseFloat(document.getElementById('convCad').value) || 0;
+        const valUah = parseFloat(document.getElementById('convUah').value) || 0;
+
+        if (source === 'USD') {
+            const uah = valUsd * usdRateNBU;
+            document.getElementById('convUah').value = uah ? uah.toFixed(2) : '';
+            document.getElementById('convCad').value = uah ? (uah / cadRateNBU).toFixed(2) : '';
+        } else if (source === 'CAD') {
+            const uah = valCad * cadRateNBU;
+            document.getElementById('convUah').value = uah ? uah.toFixed(2) : '';
+            document.getElementById('convUsd').value = uah ? (uah / usdRateNBU).toFixed(2) : '';
+        } else if (source === 'UAH') {
+            document.getElementById('convUsd').value = valUah ? (valUah / usdRateNBU).toFixed(2) : '';
+            document.getElementById('convCad').value = valUah ? (valUah / cadRateNBU).toFixed(2) : '';
+        }
+    }
+
     async function loadNBURates() {
         try {
             const res = await fetch('https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json');
             const data = await res.json();
             const usdObj = data.find(c => c.cc === 'USD');
             const eurObj = data.find(c => c.cc === 'EUR');
+            const cadObj = data.find(c => c.cc === 'CAD');
             
             if (usdObj && eurObj) {
                 usdRateNBU = usdObj.rate;
                 eurRateNBU = eurObj.rate;
+                if (cadObj) cadRateNBU = cadObj.rate;
                 crossRateEurUsd = eurRateNBU / usdRateNBU;
                 
                 const statusEl = document.getElementById('dbStatus');
@@ -516,7 +582,6 @@
         return `<span class="curr-uah">(${uah} ₴)</span> $${usd}`;
     };
 
-    // ФОРМАТУВАННЯ СИНЬОГО ТЕКСТУ ДЛЯ БЛОКУ "ПІД КЛЮЧ"
     const formatBlue = (uahVal, usdVal) => {
         const uah = Math.ceil(uahVal).toLocaleString('uk-UA');
         const usd = Math.ceil(usdVal).toLocaleString('uk-UA');
@@ -529,9 +594,16 @@
         const t = document.getElementById('type').value;
         const destSelect = document.getElementById('destination');
         
-        let destName = "";
+        const isFirm = document.getElementById('toggleFirm').checked;
+        const firmFee = isFirm ? 60 : 0;
+        
+        // Повна назва міста без ціни (включає дужки, напр. Львів (Зимна Вода))
+        let destNameFull = "";
+        let timelineCity = "";
         if (destSelect.options.length > 0 && destSelect.selectedIndex >= 0) {
-            destName = destSelect.options[destSelect.selectedIndex].text.split(' (')[0];
+            let rawDestName = destSelect.options[destSelect.selectedIndex].text;
+            destNameFull = rawDestName.split(' ($')[0]; 
+            timelineCity = rawDestName.split(' (')[0]; // Для таймлайну - коротка назва
         }
         
         let cpx = parseFloat(destSelect.value) || 0;
@@ -585,42 +657,45 @@
             vt = (cBasis + dty + exc) * 0.20;
         }
         
-        const cst = dty + exc + vt;
+        let cst = dty + exc + vt;
+        
+        // +2% ДО ВСІЄЇ СУМИ МИТА ЯКЩО ЮР. ОСОБА
+        if (isFirm) {
+            cst = cst * 1.02;
+        }
+
         const f = (n) => "$" + Math.ceil(n).toLocaleString('uk-UA');
 
-        // РОЗРАХУНОК "ПІД КЛЮЧ" (ПФУ, СЕРТИФІКАТ, МРЕВ)
         let pfUah = 0;
         if (fuel !== 'electric') {
-            // Ставки ПФУ 2026 (на базі прожиткового мінімуму)
             if (cBasisUah <= 499620) { pfUah = cBasisUah * 0.03; } 
             else if (cBasisUah <= 878120) { pfUah = cBasisUah * 0.04; } 
             else { pfUah = cBasisUah * 0.05; }
         }
-        let firstRegUah = pfUah + 1500; // ПФУ + бланки МРЕВ
+        let firstRegUah = pfUah + 1500; 
         let firstRegUsd = firstRegUah / usdRateNBU;
-        
         let certUah = 5000;
         let certUsd = certUah / usdRateNBU;
-        
         let mvsUsd = 100;
         let mvsUah = mvsUsd * usdRateNBU;
 
-        // Вивід в HTML
         document.getElementById('resPfInfo').innerHTML = formatBlue(firstRegUah, firstRegUsd);
         document.getElementById('resCertInfo').innerHTML = formatBlue(certUah, certUsd);
         document.getElementById('resMvsInfo').innerHTML = formatBlue(mvsUah, mvsUsd);
 
-        // ВІДОБРАЖЕННЯ В ЗАЛЕЖНОСТІ ВІД РЕЖИМУ
+        // ФОРМУЄМО НАЗВУ МИТА ЗАЛЕЖНО ВІД ФІРМИ
+        let baseCustomsText = isFirm ? 'Митні платежі (МВ 2%)' : 'Митні платежі (МВ)';
+
         if (currentMode === 'dealer') {
             document.getElementById('dealerLines').style.display = 'block';
             document.getElementById('publicLines').style.display = 'none';
             document.getElementById('containerPhotoBlock').style.display = 'block';
             
             const complexLabel = document.getElementById('complexLabel');
-            complexLabel.innerText = destName ? `Комплекс / Доставка (${destName})` : `Комплекс / Доставка`;
+            complexLabel.innerText = destNameFull ? `Комплекс / Доставка (${destNameFull})` : `Комплекс / Доставка`;
 
             const customsTitle = document.getElementById('customsTitle');
-            customsTitle.innerHTML = (t === 'Pickup') ? 'Митні платежі <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>' : 'Митні платежі (МВ)';
+            customsTitle.innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
 
             document.getElementById('resBid').innerText = f(bid);
             document.getElementById('resFee').innerText = f(fee);
@@ -635,31 +710,43 @@
             } else {
                 document.getElementById('lineEvSurcharge').style.display = 'none';
             }
+
+            if (isFirm) {
+                document.getElementById('dlrFirmLine').style.display = 'flex';
+            } else {
+                document.getElementById('dlrFirmLine').style.display = 'none';
+            }
             
             document.getElementById('resCustomsTotal').innerHTML = formatUahUsd(cst);
             document.getElementById('resDuty').innerHTML = formatUahUsd(dty);
             document.getElementById('resExcise').innerHTML = formatUahUsd(exc);
             document.getElementById('resVat').innerHTML = formatUahUsd(vt);
             
-            const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee;
+            const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee + firmFee;
             animateValue('resTotal', currentTotal, Math.ceil(finalTotal), 600);
             currentTotal = Math.ceil(finalTotal);
 
         } else {
-            // PUBLIC MODE
             document.getElementById('dealerLines').style.display = 'none';
             document.getElementById('publicLines').style.display = 'block';
             document.getElementById('containerPhotoBlock').style.display = 'none';
 
             const pubLabel = document.getElementById('pubDeliveryLabel');
-            pubLabel.innerText = destName ? `Повна вартість з доставкою (${destName})` : `Повна вартість з доставкою`;
+            pubLabel.innerText = destNameFull ? `Повна вартість з доставкою (${destNameFull})` : `Повна вартість з доставкою`;
 
             const pubCustoms = document.getElementById('pubCustomsLabel');
-            pubCustoms.innerHTML = (t === 'Pickup') ? 'Митні платежі <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>' : 'Митні платежі (МВ)';
+            pubCustoms.innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
+
+            if (isFirm) {
+                document.getElementById('pubFirmLine').style.display = 'flex';
+            } else {
+                document.getElementById('pubFirmLine').style.display = 'none';
+            }
 
             const rndMarkup = 50 + ((bid + vol + cpx) % 49);
             const pubDeliverySum = bid + fee + sw + land + sea + cpx + electricFee + 300 + rndMarkup;
-            const pubTotal = pubDeliverySum + cst;
+            
+            const pubTotal = pubDeliverySum + cst + firmFee;
 
             document.getElementById('pubDeliveryRes').innerText = f(pubDeliverySum);
             document.getElementById('pubCustomsRes').innerText = f(cst);
@@ -668,12 +755,22 @@
             currentTotal = Math.ceil(pubTotal);
         }
 
+        // ТАЙМЛАЙН
         document.getElementById('timelineUI').style.display = 'flex';
         document.getElementById('tlStart').innerText = loc.port;
         document.getElementById('tlEU').innerText = s.end;
-        document.getElementById('tlDest').innerText = destName;
+        document.getElementById('tlDest').innerText = timelineCity; // Коротка назва для кружечка
+        
         document.getElementById('flagStart').innerText = (loc.port === 'Toronto' || loc.port.includes('Alberta') || loc.port.includes('Halifax')) ? '🇨🇦' : '🇺🇸';
         document.getElementById('flagEU').innerText = (s.end === 'Gdansk') ? '🇵🇱' : '🇱🇹';
+
+        // ВИБІР ПОТЯГА АБО АВТОВОЗУ
+        const euToUaLine = document.getElementById('euToUaLine');
+        if (s.end === 'Gdansk') {
+            euToUaLine.className = 'tl-line line-train';
+        } else {
+            euToUaLine.className = 'tl-line line-truck';
+        }
     }
 </script>
 </body>
