@@ -163,7 +163,6 @@
         .info-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; font-weight: 500; color: #cbd5e1; }
         .info-line span:last-child { color: var(--copart-blue); font-weight: 700; text-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
 
-        /* ОНОВЛЕНИЙ КРУПНИЙ ТАЙМЛАЙН */
         .timeline { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
         .tl-step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; z-index: 2; }
         .tl-icon { font-size: 2.5rem; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.4); }
@@ -174,13 +173,41 @@
         .line-truck::after { content: '🚛'; }
         .line-train::after { content: '🚆'; }
 
-        /* КОНВЕРТЕР ВАЛЮТ */
+        /* КОНВЕРТЕР ВАЛЮТ (ВИПРАВЛЕНО ВИРІВНЮВАННЯ) */
         .converter-block { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-top: 20px; }
         .converter-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 10px; text-align: center; }
-        .converter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .converter-grid div { text-align: center; }
-        .converter-grid label { font-size: 0.65rem; color: #cbd5e1; margin-bottom: 4px; }
-        .converter-grid input { padding: 8px; font-size: 0.95rem; text-align: center; margin-bottom: 0; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); font-weight: 700; }
+        
+        .converter-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            gap: 10px; 
+            align-items: flex-end; /* Вирівнювання всього блоку по нижньому краю */
+        }
+        .converter-grid div { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-end; 
+            text-align: center; 
+            height: 100%; 
+        }
+        .converter-grid label { 
+            font-size: 0.6rem; 
+            color: #cbd5e1; 
+            margin-bottom: 6px; 
+            line-height: 1.15; 
+            display: block; 
+        }
+        .converter-grid input { 
+            padding: 8px; 
+            font-size: 0.95rem; 
+            text-align: center; 
+            margin-bottom: 0; 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            font-weight: 700; 
+            width: 100%; 
+            box-sizing: border-box; 
+        }
         .converter-grid input:focus { border-color: var(--copart-blue); box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
 
         .container-photo-box { margin-top: 20px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: var(--input-bg); text-align: center; padding-bottom: 8px; }
@@ -339,7 +366,7 @@
             <div class="tl-line line-ship"></div>
             <div class="tl-step"><span class="tl-icon" id="flagEU">🇪🇺</span><span class="tl-text" id="tlEU">Port</span></div>
             <div class="tl-line line-truck" id="euToUaLine"></div>
-            <div class="tl-step"><span class="tl-icon">🇺🇦</span><span class="tl-text" id="tlDest">Львів</span></div>
+            <div class="tl-step"><span class="tl-icon" id="flagUA">🇺🇦</span><span class="tl-text" id="tlDest">Львів</span></div>
         </div>
 
         <div class="converter-block">
@@ -597,13 +624,12 @@
         const isFirm = document.getElementById('toggleFirm').checked;
         const firmFee = isFirm ? 60 : 0;
         
-        // Повна назва міста без ціни (включає дужки, напр. Львів (Зимна Вода))
         let destNameFull = "";
         let timelineCity = "";
         if (destSelect.options.length > 0 && destSelect.selectedIndex >= 0) {
             let rawDestName = destSelect.options[destSelect.selectedIndex].text;
             destNameFull = rawDestName.split(' ($')[0]; 
-            timelineCity = rawDestName.split(' (')[0]; // Для таймлайну - коротка назва
+            timelineCity = rawDestName.split(' (')[0]; 
         }
         
         let cpx = parseFloat(destSelect.value) || 0;
@@ -659,10 +685,7 @@
         
         let cst = dty + exc + vt;
         
-        // +2% ДО ВСІЄЇ СУМИ МИТА ЯКЩО ЮР. ОСОБА
-        if (isFirm) {
-            cst = cst * 1.02;
-        }
+        if (isFirm) { cst = cst * 1.02; }
 
         const f = (n) => "$" + Math.ceil(n).toLocaleString('uk-UA');
 
@@ -683,7 +706,6 @@
         document.getElementById('resCertInfo').innerHTML = formatBlue(certUah, certUsd);
         document.getElementById('resMvsInfo').innerHTML = formatBlue(mvsUah, mvsUsd);
 
-        // ФОРМУЄМО НАЗВУ МИТА ЗАЛЕЖНО ВІД ФІРМИ
         let baseCustomsText = isFirm ? 'Митні платежі (МВ 2%)' : 'Митні платежі (МВ)';
 
         if (currentMode === 'dealer') {
@@ -755,16 +777,19 @@
             currentTotal = Math.ceil(pubTotal);
         }
 
-        // ТАЙМЛАЙН
         document.getElementById('timelineUI').style.display = 'flex';
         document.getElementById('tlStart').innerText = loc.port;
         document.getElementById('tlEU').innerText = s.end;
-        document.getElementById('tlDest').innerText = timelineCity; // Коротка назва для кружечка
         
+        // Відображаємо тільки назву міста без дужок на таймлайні
+        document.getElementById('tlDest').innerText = timelineCity;
+        
+        // Зберігаємо український прапорець
+        document.getElementById('flagUA').innerText = '🇺🇦';
+
         document.getElementById('flagStart').innerText = (loc.port === 'Toronto' || loc.port.includes('Alberta') || loc.port.includes('Halifax')) ? '🇨🇦' : '🇺🇸';
         document.getElementById('flagEU').innerText = (s.end === 'Gdansk') ? '🇵🇱' : '🇱🇹';
 
-        // ВИБІР ПОТЯГА АБО АВТОВОЗУ
         const euToUaLine = document.getElementById('euToUaLine');
         if (s.end === 'Gdansk') {
             euToUaLine.className = 'tl-line line-train';
