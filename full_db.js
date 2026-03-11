@@ -3,6 +3,20 @@
  */
 const db = {
   "copart": {
+    "CLEWISTON - Florida - Copart": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Savannah" },
+    "FT. PIERCE - Florida - Copart": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Savannah" },
+    "MIAMI CENTRAL - Florida - Copart": { "Car": 425, "SUV": 425, "Motorcycle": 425, "Pickup": 625, "port": "Savannah" },
+    "MIAMI NORTH - Florida - Copart": { "Car": 425, "SUV": 425, "Motorcycle": 425, "Pickup": 625, "port": "Savannah" },
+    "MIAMI SOUTH - Florida - Copart": { "Car": 425, "SUV": 425, "Motorcycle": 425, "Pickup": 625, "port": "Savannah" },
+    "OCALA - Florida - Copart": { "Car": 375, "SUV": 375, "Motorcycle": 375, "Pickup": 575, "port": "Savannah" },
+    "ORLANDO - Florida - Copart": { "Car": 375, "SUV": 375, "Motorcycle": 375, "Pickup": 575, "port": "Savannah" },
+    "ORLANDO NORTH - Florida - Copart": { "Car": 375, "SUV": 375, "Motorcycle": 375, "Pickup": 575, "port": "Savannah" },
+    "ORLANDO SOUTH - Florida - Copart": { "Car": 375, "SUV": 375, "Motorcycle": 375, "Pickup": 575, "port": "Savannah" },
+    "PUNTA GORDA - Florida - Copart": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Savannah" },
+    "PUNTA GORDA SOUTH - Florida - Copart": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Savannah" },
+    "TAMPA SOUTH - Florida - Copart": { "Car": 375, "SUV": 375, "Motorcycle": 375, "Pickup": 575, "port": "Savannah" },
+    "TAMPA SOUTH - Mulberry Sublot - Florida - Copart": { "Car": 375, "SUV": 375, "Motorcycle": 375, "Pickup": 575, "port": "Savannah" },
+    "WEST PALM BEACH - Florida - Copart": { "Car": 425, "SUV": 425, "Motorcycle": 425, "Pickup": 625, "port": "Savannah" },
     "ABILENE - Texas - Copart": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Houston" },
     "ALBUQUERQUE - New Mexico - Copart": { "Car": 650, "SUV": 650, "Motorcycle": 650, "Pickup": 850, "port": "Houston" },
     "AMARILLO - Texas - Copart": { "Car": 575, "SUV": 575, "Motorcycle": 575, "Pickup": 775, "port": "Houston" },
@@ -222,6 +236,16 @@ const db = {
     "TORONTO - Ontario - Copart": { "Car": 275, "SUV": 275, "Motorcycle": 275, "Pickup": 475, "port": "Toronto" }
   },
   "iaai": {
+    "FORT MYERS - Florida - IAAI": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Savannah" },
+    "FORT PIERCE - Florida - IAAI": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Savannah" },
+    "MIAMI - Florida - IAAI": { "Car": 425, "SUV": 425, "Motorcycle": 425, "Pickup": 625, "port": "Savannah" },
+    "MIAMI-NORTH - Florida - IAAI": { "Car": 425, "SUV": 425, "Motorcycle": 425, "Pickup": 625, "port": "Savannah" },
+    "ORLANDO - Florida - IAAI": { "Car": 375, "SUV": 375, "Motorcycle": 375, "Pickup": 575, "port": "Savannah" },
+    "ORLANDO-NORTH - Florida - IAAI": { "Car": 375, "SUV": 375, "Motorcycle": 375, "Pickup": 575, "port": "Savannah" },
+    "PENSACOLA - Florida - IAAI": { "Car": 425, "SUV": 425, "Motorcycle": 425, "Pickup": 625, "port": "Savannah" },
+    "TAMPA - Florida - IAAI": { "Car": 375, "SUV": 375, "Motorcycle": 375, "Pickup": 575, "port": "Savannah" },
+    "TAMPA NORTH - Florida - IAAI": { "Car": 375, "SUV": 375, "Motorcycle": 375, "Pickup": 575, "port": "Savannah" },
+    "WEST PALM BEACH - Florida - IAAI": { "Car": 425, "SUV": 425, "Motorcycle": 425, "Pickup": 625, "port": "Savannah" },
     "NEW ORLEANS EAST - Louisiana - IAAI": { "Car": 450, "SUV": 450, "Motorcycle": 450, "Pickup": 650, "port": "Houston" },
     "ABILENE - Texas - IAAI": { "Car": 400, "SUV": 400, "Motorcycle": 400, "Pickup": 600, "port": "Houston" },
     "ALBUQUERQUE - New Mexico - IAAI": { "Car": 650, "SUV": 650, "Motorcycle": 650, "Pickup": 850, "port": "Houston" },
