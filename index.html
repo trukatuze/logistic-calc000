@@ -67,16 +67,25 @@
         }
         .brand-shipping span { color: #cbd5e1; }
 
-        /* КНОПКИ РЕЖИМІВ */
-        .calc-options { display: flex; flex-direction: column; align-items: center; width: 100%; margin: 20px 0 25px 0; }
-        .mode-btn {
-            font-size: 0.95rem; font-weight: 800; color: var(--copart-blue); text-transform: uppercase;
-            letter-spacing: 1px; cursor: pointer; padding: 10px 20px; border-radius: 8px; transition: all 0.3s;
-            text-align: center; width: 85%; box-sizing: border-box; border: 1px solid transparent;
+        /* ОНОВЛЕНІ КНОПКИ-ВКЛАДКИ (ІДЕАЛЬНА СИМЕТРІЯ) */
+        .calc-options { 
+            display: flex; width: 100%; margin: 15px 0 25px;
+            background: rgba(0,0,0,0.4); padding: 5px; border-radius: 12px; 
+            border: 1px solid rgba(255,255,255,0.05); box-sizing: border-box;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);
         }
-        .mode-btn:hover { background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); }
-        .mode-btn.active { color: white; background: var(--copart-blue); box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); border-color: var(--copart-blue); }
-        .calc-divider { width: 70%; height: 1px; background: rgba(220, 38, 38, 0.4); margin: 6px 0; }
+        .mode-btn {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            font-size: clamp(0.65rem, 3.5vw, 0.8rem); font-weight: 700; color: #64748b; 
+            text-transform: uppercase; cursor: pointer; 
+            padding: 12px 5px; border-radius: 8px; transition: all 0.3s ease;
+            text-align: center; line-height: 1.2; box-sizing: border-box;
+        }
+        .mode-btn:hover { color: #f8fafc; }
+        .mode-btn.active {
+            color: #ffffff; background: var(--copart-blue); 
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); font-weight: 800;
+        }
 
         /* ВІКНО ПАРОЛЮ */
         .dealer-modal {
@@ -124,16 +133,17 @@
         .result-item:last-child { border-bottom: none; }
         select { background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto; }
 
-        /* СПЕЦ ПОЛЕ З USD */
         .input-with-currency { position: relative; }
         .input-with-currency input { padding-right: 50px; }
         .currency-indicator { position: absolute; right: 15px; top: 40%; transform: translateY(-50%); color: var(--text-muted); font-weight: 700; font-size: 0.9rem; pointer-events: none; }
 
         /* ТУМБЛЕРИ (СВІТЧІ) */
         .toggles-container { margin: 15px 0 20px; display: flex; flex-direction: column; gap: 10px; }
-        .toggle-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
-        .toggle-row span { font-size: 0.85rem; font-weight: 600; color: #cbd5e1; }
-        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .toggle-row .labels { display: flex; flex-direction: column; gap: 2px; flex: 1; padding-right: 10px; }
+        .toggle-row span.primary { font-size: 0.85rem; font-weight: 600; color: #f8fafc; }
+        .toggle-row span.secondary { font-size: 0.65rem; font-weight: 500; color: #94a3b8; line-height: 1.2; text-transform: none; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; margin: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--input-bg); border: 1px solid var(--border-color); transition: .4s; border-radius: 24px; }
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: var(--text-muted); transition: .4s; border-radius: 50%; }
@@ -219,9 +229,8 @@
     </div>
 
     <div class="calc-options">
-        <div class="mode-btn" id="btnDealer" onclick="openDealerModal()">DEALERS ONLY CALCULATOR</div>
-        <div class="calc-divider"></div>
         <div class="mode-btn active" id="btnPublic" onclick="activatePublicMode()">LOGISTIC CALCULATOR</div>
+        <div class="mode-btn" id="btnDealer" onclick="openDealerModal()">DEALERS ONLY CALCULATOR</div>
     </div>
 
     <div id="dbStatus" class="status">Підключення до бази та НБУ...</div>
@@ -275,16 +284,36 @@
 
     <div class="toggles-container">
         <div class="toggle-row">
-            <span>Фірма (юр. особа)</span>
+            <span class="primary" style="flex:1;">Фірма (юр. особа)</span>
             <label class="switch">
                 <input type="checkbox" id="toggleFirm" onchange="triggerCalc()">
                 <span class="slider"></span>
             </label>
         </div>
         <div class="toggle-row">
-            <span>Документи типу Bill of Sale</span>
+            <div class="labels">
+                <span class="primary">Документи:</span>
+                <span class="secondary">Bill of Sale, Parts Only, Certificate Of Destruction, та ін.</span>
+            </div>
             <label class="switch">
                 <input type="checkbox" id="toggleBos" onchange="triggerCalc()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="toggle-row">
+            <div class="labels">
+                <span class="primary">"Закриті" аукціони:</span>
+                <span class="secondary">Wisconsin, Michigan, Nevada, Utah, Alabama</span>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="toggleBidder" onchange="triggerCalc()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="toggle-row">
+            <span class="primary" style="flex:1;">Страхування (1.5%)</span>
+            <label class="switch">
+                <input type="checkbox" id="toggleIns" onchange="triggerCalc()">
                 <span class="slider"></span>
             </label>
         </div>
@@ -298,7 +327,6 @@
             <div class="line orange-line" style="display:flex; justify-content:space-between;">
                 <span id="pubCustomsLabel">Митні платежі (МВ)</span><span id="pubCustomsRes">$0</span>
             </div>
-            <div class="line" id="pubFirmLine" style="display:none; color:var(--copart-blue);"><span>Юр. особа</span><span id="pubFirmRes">$60</span></div>
         </div>
 
         <div id="dealerLines" style="display:none;">
@@ -317,6 +345,8 @@
             
             <div class="line" id="dlrFirmLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Юр. особа</span><span id="dlrFirmRes" style="color:var(--copart-blue)">$60</span></div>
             <div class="line" id="dlrBosLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Документи (Bill of Sale)</span><span id="dlrBosRes" style="color:var(--copart-blue)">$250</span></div>
+            <div class="line" id="dlrBidderLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Bidder (Закриті аукціони)</span><span id="dlrBidderRes" style="color:var(--copart-blue)">$300</span></div>
+            <div class="line" id="dlrInsLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Страхування</span><span id="dlrInsRes" style="color:var(--copart-blue)">$0</span></div>
 
             <div class="customs-block">
                 <div class="customs-header">
@@ -632,13 +662,23 @@
 
         const isBos = document.getElementById('toggleBos').checked;
         const bosFee = isBos ? 250 : 0;
+
+        const isBidder = document.getElementById('toggleBidder').checked;
+        const bidderFee = isBidder ? 300 : 0;
+
+        const isIns = document.getElementById('toggleIns').checked;
         
-        let destNameFull = "";
+        let destNameShort = "";
         let timelineCity = "";
         if (destSelect && destSelect.options.length > 0 && destSelect.selectedIndex >= 0) {
             let rawDestName = destSelect.options[destSelect.selectedIndex].text;
-            destNameFull = rawDestName.split(' ($')[0]; 
-            timelineCity = rawDestName.split(' (')[0]; 
+            if (rawDestName.includes('Львів (')) {
+                destNameShort = rawDestName.split('(')[1].split(')')[0];
+                timelineCity = destNameShort;
+            } else {
+                destNameShort = rawDestName.split(' ($')[0]; 
+                timelineCity = rawDestName.split(' (')[0]; 
+            }
         }
         
         let cpx = destSelect ? (parseFloat(destSelect.value) || 0) : 0;
@@ -666,7 +706,13 @@
             canDoc = 170;
         }
 
-        const sw = ((bid + fee + land + sea + canTax + canDoc) * 0.025 + 70);
+        const swiftCommission = isBidder ? 100 : 70;
+        const sw = ((bid + fee + land + sea + canTax + canDoc) * 0.025 + swiftCommission);
+        
+        let insuranceFee = 0;
+        if (isIns) {
+            insuranceFee = Math.max(100, (bid + fee) * 0.015);
+        }
 
         const fuel = document.getElementById('fuel').value;
         const yr = parseInt(document.getElementById('year').value) || 2026;
@@ -732,11 +778,8 @@
             document.getElementById('publicLines').style.display = 'none';
             document.getElementById('containerPhotoBlock').style.display = 'block';
             
-            const complexLabel = document.getElementById('complexLabel');
-            complexLabel.innerText = destNameFull ? `Комплекс / Доставка (${destNameFull})` : `Комплекс / Доставка`;
-
-            const customsTitle = document.getElementById('customsTitle');
-            customsTitle.innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
+            document.getElementById('complexLabel').innerText = destNameShort ? `Комплекс / Доставка (${destNameShort})` : `Комплекс / Доставка`;
+            document.getElementById('customsTitle').innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
 
             document.getElementById('resBid').innerText = f(bid);
             document.getElementById('resFee').innerText = f(fee);
@@ -758,11 +801,23 @@
                 document.getElementById('dlrFirmLine').style.display = 'none';
             }
 
-            // Відображення Bill of Sale
             if (isBos) {
                 document.getElementById('dlrBosLine').style.display = 'flex';
             } else {
                 document.getElementById('dlrBosLine').style.display = 'none';
+            }
+
+            if (isBidder) {
+                document.getElementById('dlrBidderLine').style.display = 'flex';
+            } else {
+                document.getElementById('dlrBidderLine').style.display = 'none';
+            }
+
+            if (isIns) {
+                document.getElementById('dlrInsLine').style.display = 'flex';
+                document.getElementById('dlrInsRes').innerText = f(insuranceFee);
+            } else {
+                document.getElementById('dlrInsLine').style.display = 'none';
             }
             
             if (isCanada) {
@@ -781,7 +836,7 @@
             document.getElementById('resExcise').innerHTML = formatUahUsd(exc);
             document.getElementById('resVat').innerHTML = formatUahUsd(vt);
             
-            const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee + firmFee + bosFee + canTax + canDoc;
+            const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee + firmFee + bosFee + canTax + canDoc + bidderFee + insuranceFee;
             animateValue('resTotal', currentTotal, Math.ceil(finalTotal), 600);
             currentTotal = Math.ceil(finalTotal);
 
@@ -791,23 +846,15 @@
             document.getElementById('publicLines').style.display = 'block';
             document.getElementById('containerPhotoBlock').style.display = 'none';
 
-            const pubLabel = document.getElementById('pubDeliveryLabel');
-            pubLabel.innerText = destNameFull ? `Повна вартість з доставкою (${destNameFull})` : `Повна вартість з доставкою`;
-
-            const pubCustoms = document.getElementById('pubCustomsLabel');
-            pubCustoms.innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
-
-            if (isFirm) {
-                document.getElementById('pubFirmLine').style.display = 'flex';
-            } else {
-                document.getElementById('pubFirmLine').style.display = 'none';
-            }
+            document.getElementById('pubDeliveryLabel').innerText = destNameShort ? `Повна вартість з доставкою (${destNameShort})` : `Повна вартість з доставкою`;
+            document.getElementById('pubCustomsLabel').innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
 
             const rndMarkup = 50 + ((bid + vol + cpx) % 49);
-            // Bill of Sale (bosFee) приховано додається в загальну суму доставки
-            const pubDeliverySum = bid + fee + sw + land + sea + cpx + electricFee + 300 + rndMarkup + canTax + canDoc + bosFee;
             
-            const pubTotal = pubDeliverySum + cst + firmFee;
+            // Всі додаткові витрати ховаються в суму доставки
+            const pubDeliverySum = bid + fee + sw + land + sea + cpx + electricFee + 300 + rndMarkup + canTax + canDoc + bosFee + bidderFee + insuranceFee + firmFee;
+            
+            const pubTotal = pubDeliverySum + cst;
 
             document.getElementById('pubDeliveryRes').innerText = f(pubDeliverySum);
             document.getElementById('pubCustomsRes').innerText = f(cst);
@@ -819,20 +866,13 @@
         document.getElementById('timelineUI').style.display = 'flex';
         document.getElementById('tlStart').innerText = loc.port;
         document.getElementById('tlEU').innerText = s.end;
-        
         document.getElementById('tlDest').innerText = timelineCity; 
-        
         document.getElementById('flagUA').innerText = '🇺🇦';
-
         document.getElementById('flagStart').innerText = (loc.port === 'Toronto' || loc.port.includes('Alberta') || loc.port.includes('Halifax')) ? '🇨🇦' : '🇺🇸';
         document.getElementById('flagEU').innerText = (s.end === 'Gdansk') ? '🇵🇱' : '🇱🇹';
 
         const euToUaLine = document.getElementById('euToUaLine');
-        if (s.end === 'Gdansk') {
-            euToUaLine.className = 'tl-line line-train';
-        } else {
-            euToUaLine.className = 'tl-line line-truck';
-        }
+        euToUaLine.className = (s.end === 'Gdansk') ? 'tl-line line-train' : 'tl-line line-truck';
     }
 </script>
 </body>
