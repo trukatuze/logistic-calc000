@@ -67,7 +67,7 @@
         }
         .brand-shipping span { color: #cbd5e1; }
 
-        /* ОНОВЛЕНІ КНОПКИ-ВКЛАДКИ (ІДЕАЛЬНА СИМЕТРІЯ) */
+        /* ОНОВЛЕНІ КНОПКИ-ВКЛАДКИ */
         .calc-options { 
             display: flex; width: 100%; margin: 15px 0 25px;
             background: rgba(0,0,0,0.4); padding: 5px; border-radius: 12px; 
@@ -134,8 +134,34 @@
         select { background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto; }
 
         .input-with-currency { position: relative; }
-        .input-with-currency input { padding-right: 50px; }
+        .input-with-currency input { padding-right: 50px; margin-bottom: 0; }
         .currency-indicator { position: absolute; right: 15px; top: 40%; transform: translateY(-50%); color: var(--text-muted); font-weight: 700; font-size: 0.9rem; pointer-events: none; }
+
+        /* НОВИЙ БЛОК: СТАВКА = РАЗОМ */
+        .bid-total-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .bid-total-row .half-col {
+            flex: 1;
+            min-width: 0;
+        }
+        .bid-total-row label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.65rem;
+        }
+        .equals-sign {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #64748b;
+            padding-bottom: 11px;
+            line-height: 1;
+        }
 
         /* ТУМБЛЕРИ (СВІТЧІ) */
         .toggles-container { margin: 15px 0 20px; display: flex; flex-direction: column; gap: 10px; }
@@ -172,7 +198,6 @@
         .info-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; font-weight: 500; color: #cbd5e1; }
         .info-line span:last-child { color: var(--copart-blue); font-weight: 700; text-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
 
-        /* ОНОВЛЕНИЙ КРУПНИЙ ТАЙМЛАЙН */
         .timeline { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
         .tl-step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; z-index: 2; }
         .tl-icon { font-size: 2.5rem; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.4); }
@@ -183,7 +208,6 @@
         .line-truck::after { content: '🚛'; }
         .line-train::after { content: '🚆'; }
 
-        /* КОНВЕРТЕР ВАЛЮТ */
         .converter-block { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-top: 20px; }
         .converter-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 10px; text-align: center; }
         .converter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; align-items: flex-end; }
@@ -273,13 +297,25 @@
         </div>
     </div>
 
-    <label>Місто отримання</label>
-    <select id="destination" onchange="triggerCalc()"></select>
+    <label style="margin-bottom: 6px;">Місто отримання</label>
+    <select id="destination" onchange="triggerCalc()" style="margin-bottom: 20px;"></select>
     
-    <label>Ставка на аукціоні</label>
-    <div class="input-with-currency">
-        <input type="number" id="bid" placeholder="0" oninput="triggerCalc()">
-        <span class="currency-indicator">USD</span>
+    <div class="bid-total-row">
+        <div class="half-col">
+            <label>Ставка на аукціоні</label>
+            <div class="input-with-currency">
+                <input type="number" id="bid" placeholder="0" oninput="triggerCalc()">
+                <span class="currency-indicator">USD</span>
+            </div>
+        </div>
+        <div class="equals-sign">=</div>
+        <div class="half-col">
+            <label>Разом (бюджет)</label>
+            <div class="input-with-currency">
+                <input type="number" id="totalBudget" placeholder="0" oninput="reverseCalc()">
+                <span class="currency-indicator">USD</span>
+            </div>
+        </div>
     </div>
 
     <div class="toggles-container">
@@ -427,6 +463,7 @@
     let crossRateEurUsd = 1.08; 
     
     let currentMode = 'public'; 
+    let isReverse = false;
 
     function vibro(ms = 30) { if(navigator.vibrate) navigator.vibrate(ms); }
 
@@ -451,7 +488,7 @@
             currentMode = 'dealer';
             document.getElementById('btnDealer').classList.add('active');
             document.getElementById('btnPublic').classList.remove('active');
-            calc(); 
+            triggerCalc(); 
         } else {
             vibro(100); 
             pinInput.classList.add('shake');
@@ -468,7 +505,7 @@
         currentMode = 'public';
         document.getElementById('btnPublic').classList.add('active');
         document.getElementById('btnDealer').classList.remove('active');
-        calc(); 
+        triggerCalc(); 
     }
 
     function convertCurrency(source) {
@@ -510,7 +547,7 @@
                 
                 document.getElementById('resRates').innerText = `$1 = ${usdRateNBU.toFixed(2)} ₴ | €1 = ${eurRateNBU.toFixed(2)} ₴`;
 
-                if (document.getElementById('city').value !== "") calc();
+                if (document.getElementById('city').value !== "") triggerCalc();
             }
         } catch (e) {
             console.error('Помилка НБУ:', e);
@@ -538,6 +575,13 @@
         document.getElementById('dbStatus').classList.add('success');
         
         loadNBURates();
+
+        // Додаємо клік на Enter для пароля
+        document.getElementById('dealerPin').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') {
+                submitDealerModal();
+            }
+        });
 
         const cityInput = document.getElementById('city');
         const locDropdown = document.getElementById('locList');
@@ -580,10 +624,8 @@
             document.getElementById('dynamicAucLogo').style.display = 'none';
             document.getElementById('timelineUI').style.display = 'none';
             document.getElementById('containerPhotoBlock').style.display = 'none';
-            
             document.getElementById('dlrCanTaxLine').style.display = 'none';
             document.getElementById('dlrCanDocLine').style.display = 'none';
-            
             cityInput.focus();
         });
 
@@ -619,10 +661,54 @@
             dest.innerHTML = '';
             complexRates[s.end].forEach(d => { let o = document.createElement('option'); o.value = d.price; o.text = d.name + " ($" + d.price + ")"; dest.appendChild(o); });
         }
-        calc();
+        triggerCalc();
     }
 
-    function triggerCalc() { vibro(20); calc(); }
+    function triggerCalc() { 
+        vibro(20); 
+        isReverse = false;
+        calc(); 
+    }
+
+    // ЗВОРОТНИЙ РОЗРАХУНОК (від загального бюджету до ставки)
+    function reverseCalc() {
+        const targetTotal = parseFloat(document.getElementById('totalBudget').value) || 0;
+        const bidInput = document.getElementById('bid');
+
+        if(targetTotal <= 0) {
+            bidInput.value = '';
+            isReverse = false;
+            calc();
+            return;
+        }
+
+        isReverse = true;
+        let low = 0;
+        let high = targetTotal; // Ставка не може бути більшою за бюджет
+        let bestBid = 0;
+
+        // Бінарний пошук ідеальної ставки
+        while(low <= high) {
+            let mid = Math.floor((low + high) / 2);
+            let m = runMath(mid);
+            if(!m) break;
+
+            let currentTot = Math.ceil(currentMode === 'dealer' ? m.dlrTotal : m.pubTotal);
+
+            if(currentTot === targetTotal) {
+                bestBid = mid;
+                break;
+            } else if(currentTot < targetTotal) {
+                bestBid = mid; // Запам'ятовуємо найвищу ставку, яка ще влазить в бюджет
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+
+        bidInput.value = bestBid;
+        calc(); // Оновлюємо UI з знайденою ставкою
+    }
 
     function animateValue(id, start, end, duration) {
         if (start === end) return;
@@ -651,33 +737,32 @@
         return `<span style="color:var(--copart-blue); font-size:0.9em; margin-right:6px; font-weight:500;">(${uah} ₴)</span> <span style="color:var(--copart-blue); font-weight:800;">$${usd}</span>`;
     };
 
-    function calc() {
-        const bid = parseFloat(document.getElementById('bid').value) || 0;
+    // ЧИСТА МАТЕМАТИКА (винесена для двостороннього розрахунку)
+    function runMath(testBid) {
         const city = document.getElementById('city').value;
         const t = document.getElementById('type').value;
         const destSelect = document.getElementById('destination');
         
         const isFirm = document.getElementById('toggleFirm').checked;
         const firmFee = isFirm ? 60 : 0;
-
         const isBos = document.getElementById('toggleBos').checked;
         const bosFee = isBos ? 250 : 0;
-
         const isBidder = document.getElementById('toggleBidder').checked;
         const bidderFee = isBidder ? 300 : 0;
-
         const isIns = document.getElementById('toggleIns').checked;
         
         let destNameShort = "";
         let timelineCity = "";
         if (destSelect && destSelect.options.length > 0 && destSelect.selectedIndex >= 0) {
             let rawDestName = destSelect.options[destSelect.selectedIndex].text;
-            if (rawDestName.includes('Львів (')) {
-                destNameShort = rawDestName.split('(')[1].split(')')[0];
-                timelineCity = destNameShort;
+            let cleanName = rawDestName.split(' ($')[0]; 
+            
+            if (cleanName === 'Львів (Зимна Вода)' || cleanName.includes('Зимна Вода')) {
+                destNameShort = "Зимна Вода";
+                timelineCity = "Зимна Вода";
             } else {
-                destNameShort = rawDestName.split(' ($')[0]; 
-                timelineCity = rawDestName.split(' (')[0]; 
+                destNameShort = cleanName;
+                timelineCity = cleanName.split(' (')[0]; 
             }
         }
         
@@ -685,42 +770,34 @@
         if (t === 'Pickup' && cpx > 0) cpx += 100;
 
         const loc = db.copart[city] || db.iaai[city] || (db.canada && db.canada[city]);
-        if (!loc) return;
+        if (!loc) return null;
         
         const s = seaRates[loc.port] || { end: "Gdansk", Car: 0, SUV: 0, Pickup: 0, Motorcycle: 0 };
         const land = (loc[t] === "Call" || !loc[t]) ? (loc["Car"] || 0) : loc[t];
         const sea = s[t] || s["Car"] || 0;
         
         let table = db.iaai[city] ? iaF : (t === 'Motorcycle' ? cpM : cpS);
-        const row = table.find(r => bid <= r.m);
-        let fee = row ? (row.p ? bid * row.p : row.f) : (bid * 0.06);
+        const row = table.find(r => testBid <= r.m);
+        let fee = row ? (row.p ? testBid * row.p : row.f) : (testBid * 0.06);
         fee += 300; 
         if (db.iaai[city]) fee += 20;
 
         let isCanada = !!(db.canada && db.canada[city]);
-        let canTax = 0;
-        let canDoc = 0;
-        
-        if (isCanada) {
-            canTax = (bid + fee) * loc.tax;
-            canDoc = 170;
-        }
+        let canTax = 0; let canDoc = 0;
+        if (isCanada) { canTax = (testBid + fee) * loc.tax; canDoc = 170; }
 
         const swiftCommission = isBidder ? 100 : 70;
-        const sw = ((bid + fee + land + sea + canTax + canDoc) * 0.025 + swiftCommission);
+        const sw = ((testBid + fee + land + sea + canTax + canDoc) * 0.025 + swiftCommission);
         
         let insuranceFee = 0;
-        if (isIns) {
-            insuranceFee = Math.max(100, (bid + fee) * 0.015);
-        }
+        if (isIns) { insuranceFee = Math.max(100, (testBid + fee) * 0.015); }
 
         const fuel = document.getElementById('fuel').value;
         const yr = parseInt(document.getElementById('year').value) || 2026;
         const vol = parseFloat(document.getElementById('vol').value) || 0;
         
-        // МИТНА БАЗА
         const shippingBasis = (t === 'Motorcycle') ? 800 : 1600;
-        const cBasis = bid + fee + shippingBasis + canTax; 
+        const cBasis = testBid + fee + shippingBasis + canTax; 
         const cBasisUah = cBasis * usdRateNBU;
         
         let dty = 0, exc = 0, vt = 0, electricFee = 0;
@@ -749,10 +826,7 @@
         }
         
         let cst = dty + exc + vt;
-        
         if (isFirm) { cst = cst * 1.02; }
-
-        const f = (n) => "$" + Math.ceil(n).toLocaleString('uk-UA');
 
         let pfUah = 0;
         if (fuel !== 'electric') {
@@ -767,112 +841,116 @@
         let mvsUsd = 100;
         let mvsUah = mvsUsd * usdRateNBU;
 
-        document.getElementById('resPfInfo').innerHTML = formatBlue(firstRegUah, firstRegUsd);
-        document.getElementById('resCertInfo').innerHTML = formatBlue(certUah, certUsd);
-        document.getElementById('resMvsInfo').innerHTML = formatBlue(mvsUah, mvsUsd);
+        let dlrTotal = testBid + fee + sw + land + sea + cpx + cst + electricFee + firmFee + bosFee + canTax + canDoc + bidderFee + insuranceFee;
+        
+        const rndMarkup = 50 + ((testBid + vol + cpx) % 49);
+        let pubDeliverySum = testBid + fee + sw + land + sea + cpx + electricFee + 300 + rndMarkup + canTax + canDoc + bosFee + bidderFee + insuranceFee + firmFee;
+        let pubTotal = pubDeliverySum + cst;
 
-        let baseCustomsText = isFirm ? 'Митні платежі (МВ 2%)' : 'Митні платежі (МВ)';
+        return {
+            fee, sw, land, sea, canTax, canDoc, insuranceFee, dty, exc, vt, cst, electricFee, cpx,
+            dlrTotal, pubTotal, pubDeliverySum, isCanada, isFirm, isBos, isBidder, isIns,
+            firstRegUah, firstRegUsd, certUah, certUsd, mvsUah, mvsUsd,
+            destNameShort, timelineCity, loc, s
+        };
+    }
+
+    function calc() {
+        const bid = parseFloat(document.getElementById('bid').value) || 0;
+        const m = runMath(bid);
+        if (!m) return;
+
+        const f = (n) => "$" + Math.ceil(n).toLocaleString('uk-UA');
+
+        document.getElementById('resPfInfo').innerHTML = formatBlue(m.firstRegUah, m.firstRegUsd);
+        document.getElementById('resCertInfo').innerHTML = formatBlue(m.certUah, m.certUsd);
+        document.getElementById('resMvsInfo').innerHTML = formatBlue(m.mvsUah, m.mvsUsd);
+
+        let baseCustomsText = m.isFirm ? 'Митні платежі (МВ 2%)' : 'Митні платежі (МВ)';
 
         if (currentMode === 'dealer') {
             document.getElementById('dealerLines').style.display = 'block';
             document.getElementById('publicLines').style.display = 'none';
             document.getElementById('containerPhotoBlock').style.display = 'block';
             
-            document.getElementById('complexLabel').innerText = destNameShort ? `Комплекс / Доставка (${destNameShort})` : `Комплекс / Доставка`;
+            document.getElementById('complexLabel').innerText = m.destNameShort ? `Комплекс / Доставка (${m.destNameShort})` : `Комплекс / Доставка`;
+            
+            const t = document.getElementById('type').value;
             document.getElementById('customsTitle').innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
 
             document.getElementById('resBid').innerText = f(bid);
-            document.getElementById('resFee').innerText = f(fee);
-            document.getElementById('resSwift').innerText = f(sw);
-            document.getElementById('resLand').innerText = f(land);
-            document.getElementById('resSea').innerText = f(sea);
-            document.getElementById('resComplex').innerText = f(cpx);
+            document.getElementById('resFee').innerText = f(m.fee);
+            document.getElementById('resSwift').innerText = f(m.sw);
+            document.getElementById('resLand').innerText = f(m.land);
+            document.getElementById('resSea').innerText = f(m.sea);
+            document.getElementById('resComplex').innerText = f(m.cpx);
             
-            if (electricFee > 0) {
-                document.getElementById('lineEvSurcharge').style.display = 'flex';
-                document.getElementById('resEvSurcharge').innerText = "$" + electricFee;
-            } else {
-                document.getElementById('lineEvSurcharge').style.display = 'none';
-            }
+            document.getElementById('lineEvSurcharge').style.display = m.electricFee > 0 ? 'flex' : 'none';
+            document.getElementById('resEvSurcharge').innerText = "$" + m.electricFee;
 
-            if (isFirm) {
-                document.getElementById('dlrFirmLine').style.display = 'flex';
-            } else {
-                document.getElementById('dlrFirmLine').style.display = 'none';
-            }
-
-            if (isBos) {
-                document.getElementById('dlrBosLine').style.display = 'flex';
-            } else {
-                document.getElementById('dlrBosLine').style.display = 'none';
-            }
-
-            if (isBidder) {
-                document.getElementById('dlrBidderLine').style.display = 'flex';
-            } else {
-                document.getElementById('dlrBidderLine').style.display = 'none';
-            }
-
-            if (isIns) {
+            document.getElementById('dlrFirmLine').style.display = m.isFirm ? 'flex' : 'none';
+            document.getElementById('dlrBosLine').style.display = m.isBos ? 'flex' : 'none';
+            document.getElementById('dlrBidderLine').style.display = m.isBidder ? 'flex' : 'none';
+            
+            if (m.isIns) {
                 document.getElementById('dlrInsLine').style.display = 'flex';
-                document.getElementById('dlrInsRes').innerText = f(insuranceFee);
+                document.getElementById('dlrInsRes').innerText = f(m.insuranceFee);
             } else {
                 document.getElementById('dlrInsLine').style.display = 'none';
             }
             
-            if (isCanada) {
+            if (m.isCanada) {
                 document.getElementById('dlrCanTaxLine').style.display = 'flex';
                 document.getElementById('dlrCanDocLine').style.display = 'flex';
-                document.getElementById('canTaxPercent').innerText = (loc.tax * 100).toFixed(0);
-                document.getElementById('dlrCanTaxRes').innerText = f(canTax);
-                document.getElementById('dlrCanDocRes').innerText = f(canDoc);
+                document.getElementById('canTaxPercent').innerText = (m.loc.tax * 100).toFixed(0);
+                document.getElementById('dlrCanTaxRes').innerText = f(m.canTax);
+                document.getElementById('dlrCanDocRes').innerText = f(m.canDoc);
             } else {
                 document.getElementById('dlrCanTaxLine').style.display = 'none';
                 document.getElementById('dlrCanDocLine').style.display = 'none';
             }
             
-            document.getElementById('resCustomsTotal').innerHTML = formatUahUsd(cst);
-            document.getElementById('resDuty').innerHTML = formatUahUsd(dty);
-            document.getElementById('resExcise').innerHTML = formatUahUsd(exc);
-            document.getElementById('resVat').innerHTML = formatUahUsd(vt);
+            document.getElementById('resCustomsTotal').innerHTML = formatUahUsd(m.cst);
+            document.getElementById('resDuty').innerHTML = formatUahUsd(m.dty);
+            document.getElementById('resExcise').innerHTML = formatUahUsd(m.exc);
+            document.getElementById('resVat').innerHTML = formatUahUsd(m.vt);
             
-            const finalTotal = bid + fee + sw + land + sea + cpx + cst + electricFee + firmFee + bosFee + canTax + canDoc + bidderFee + insuranceFee;
-            animateValue('resTotal', currentTotal, Math.ceil(finalTotal), 600);
-            currentTotal = Math.ceil(finalTotal);
+            const finalTot = Math.ceil(m.dlrTotal);
+            if(!isReverse) document.getElementById('totalBudget').value = finalTot;
+
+            animateValue('resTotal', currentTotal, finalTot, 600);
+            currentTotal = finalTot;
 
         } else {
-            // PUBLIC MODE
             document.getElementById('dealerLines').style.display = 'none';
             document.getElementById('publicLines').style.display = 'block';
             document.getElementById('containerPhotoBlock').style.display = 'none';
 
-            document.getElementById('pubDeliveryLabel').innerText = destNameShort ? `Повна вартість з доставкою (${destNameShort})` : `Повна вартість з доставкою`;
+            document.getElementById('pubDeliveryLabel').innerText = m.destNameShort ? `Повна вартість з доставкою (${m.destNameShort})` : `Повна вартість з доставкою`;
+
+            const t = document.getElementById('type').value;
             document.getElementById('pubCustomsLabel').innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
 
-            const rndMarkup = 50 + ((bid + vol + cpx) % 49);
-            
-            // Всі додаткові витрати ховаються в суму доставки
-            const pubDeliverySum = bid + fee + sw + land + sea + cpx + electricFee + 300 + rndMarkup + canTax + canDoc + bosFee + bidderFee + insuranceFee + firmFee;
-            
-            const pubTotal = pubDeliverySum + cst;
+            document.getElementById('pubDeliveryRes').innerText = f(m.pubDeliverySum);
+            document.getElementById('pubCustomsRes').innerText = f(m.cst);
 
-            document.getElementById('pubDeliveryRes').innerText = f(pubDeliverySum);
-            document.getElementById('pubCustomsRes').innerText = f(cst);
+            const finalTot = Math.ceil(m.pubTotal);
+            if(!isReverse) document.getElementById('totalBudget').value = finalTot;
 
-            animateValue('resTotal', currentTotal, Math.ceil(pubTotal), 600);
-            currentTotal = Math.ceil(pubTotal);
+            animateValue('resTotal', currentTotal, finalTot, 600);
+            currentTotal = finalTot;
         }
 
         document.getElementById('timelineUI').style.display = 'flex';
-        document.getElementById('tlStart').innerText = loc.port;
-        document.getElementById('tlEU').innerText = s.end;
-        document.getElementById('tlDest').innerText = timelineCity; 
+        document.getElementById('tlStart').innerText = m.loc.port;
+        document.getElementById('tlEU').innerText = m.s.end;
+        document.getElementById('tlDest').innerText = m.timelineCity; 
         document.getElementById('flagUA').innerText = '🇺🇦';
-        document.getElementById('flagStart').innerText = (loc.port === 'Toronto' || loc.port.includes('Alberta') || loc.port.includes('Halifax')) ? '🇨🇦' : '🇺🇸';
-        document.getElementById('flagEU').innerText = (s.end === 'Gdansk') ? '🇵🇱' : '🇱🇹';
+        document.getElementById('flagStart').innerText = (m.loc.port === 'Toronto' || m.loc.port.includes('Alberta') || m.loc.port.includes('Halifax')) ? '🇨🇦' : '🇺🇸';
+        document.getElementById('flagEU').innerText = (m.s.end === 'Gdansk') ? '🇵🇱' : '🇱🇹';
 
         const euToUaLine = document.getElementById('euToUaLine');
-        euToUaLine.className = (s.end === 'Gdansk') ? 'tl-line line-train' : 'tl-line line-truck';
+        euToUaLine.className = (m.s.end === 'Gdansk') ? 'tl-line line-train' : 'tl-line line-truck';
     }
 </script>
 </body>
