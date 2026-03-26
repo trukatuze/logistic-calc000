@@ -138,30 +138,10 @@
         .currency-indicator { position: absolute; right: 15px; top: 40%; transform: translateY(-50%); color: var(--text-muted); font-weight: 700; font-size: 0.9rem; pointer-events: none; }
 
         /* НОВИЙ БЛОК: СТАВКА = РАЗОМ */
-        .bid-total-row {
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            margin-bottom: 15px;
-            width: 100%;
-        }
-        .bid-total-row .half-col {
-            flex: 1;
-            min-width: 0;
-        }
-        .bid-total-row label {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: 0.65rem;
-        }
-        .equals-sign {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #64748b;
-            padding-bottom: 11px;
-            line-height: 1;
-        }
+        .bid-total-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 15px; width: 100%; }
+        .bid-total-row .half-col { flex: 1; min-width: 0; }
+        .bid-total-row label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.65rem; }
+        .equals-sign { font-size: 1.5rem; font-weight: 800; color: #64748b; padding-bottom: 11px; line-height: 1; }
 
         /* ТУМБЛЕРИ (СВІТЧІ) */
         .toggles-container { margin: 15px 0 20px; display: flex; flex-direction: column; gap: 10px; }
@@ -192,6 +172,35 @@
 
         .total { background: linear-gradient(135deg, var(--asphalt-dark), var(--black-bg)); color: white; padding: 20px; border-radius: 10px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 1.25rem; border: 1px solid rgba(220, 38, 38, 0.3); box-shadow: 0 0 20px rgba(220, 38, 38, 0.15); }
         .total span:last-child { color: var(--em-red-light); font-size: 1.6rem; letter-spacing: -0.5px; text-shadow: 0 0 10px var(--em-red-glow); }
+
+        /* КОРЕГУВАННЯ (НОВИЙ БЛОК) */
+        .correction-btn {
+            width: 100%; background: rgba(255,255,255,0.05); color: var(--text-muted);
+            border: 1px dashed var(--border-color); border-radius: 10px; padding: 10px;
+            font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;
+            margin-top: 15px; display: block;
+        }
+        .correction-btn:hover { background: rgba(255,255,255,0.1); color: var(--text-main); }
+        .correction-btn.active-overrides {
+            background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.4); color: #4ade80;
+        }
+        .correction-menu {
+            background: rgba(15, 23, 42, 0.95); border: 1px solid var(--copart-blue);
+            border-radius: 12px; padding: 15px; margin-top: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: none;
+        }
+        .corr-title { font-size: 0.8rem; font-weight: 700; color: var(--copart-blue); text-transform: uppercase; margin-bottom: 15px; text-align: center; }
+        .corr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .corr-grid div { display: flex; flex-direction: column; }
+        .corr-grid label { font-size: 0.6rem; margin-bottom: 4px; color: #cbd5e1; }
+        .corr-grid input { padding: 8px; font-size: 0.9rem; text-align: center; background: rgba(0,0,0,0.5); margin-bottom: 0; font-weight: 600;}
+        .corr-ok-btn {
+            width: 100%; background: var(--copart-blue); color: white; border: none;
+            padding: 10px; border-radius: 8px; font-weight: 700; margin-top: 15px; cursor: pointer;
+            text-transform: uppercase; transition: 0.3s; font-family: inherit;
+        }
+        .corr-ok-btn:hover { background: #2563eb; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
 
         .extra-fees-block { background: rgba(59, 130, 246, 0.05); border: 1px dashed rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 12px 20px; margin-top: 15px; position: relative; }
         .not-included-tag { display: block; font-size: 0.7rem; color: var(--copart-blue); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; text-align: center; }
@@ -401,6 +410,32 @@
 
         <div class="total"><span>РАЗОМ:</span><span id="resTotal">$0</span></div>
 
+        <div id="correctionBlock" style="display:none; width: 100%;">
+            <button id="correctionBtn" class="correction-btn" onclick="toggleCorrectionMenu()">Корегування ⚙️</button>
+            <div id="correctionMenu" class="correction-menu">
+                <div class="corr-title">Внести зміни</div>
+                <div class="corr-grid">
+                    <div>
+                        <label>Трансфер (SWIFT)</label>
+                        <input type="number" id="corrSwift" placeholder="0">
+                    </div>
+                    <div>
+                        <label>Суша по США/Канаді</label>
+                        <input type="number" id="corrLand" placeholder="0">
+                    </div>
+                    <div>
+                        <label>Морський фрахт</label>
+                        <input type="number" id="corrSea" placeholder="0">
+                    </div>
+                    <div>
+                        <label>Комплекс / Доставка</label>
+                        <input type="number" id="corrCpx" placeholder="0">
+                    </div>
+                </div>
+                <button class="corr-ok-btn" onclick="applyCorrections()">ОК</button>
+            </div>
+        </div>
+
         <div class="extra-fees-block">
             <span class="not-included-tag">(! не входить у вартість)</span>
             <div class="info-line">
@@ -508,6 +543,19 @@
         triggerCalc(); 
     }
 
+    // ЛОГІКА МЕНЮ КОРЕГУВАННЯ
+    function toggleCorrectionMenu() {
+        vibro(20);
+        const menu = document.getElementById('correctionMenu');
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function applyCorrections() {
+        vibro(30);
+        document.getElementById('correctionMenu').style.display = 'none';
+        triggerCalc();
+    }
+
     function convertCurrency(source) {
         const valUsd = parseFloat(document.getElementById('convUsd').value) || 0;
         const valCad = parseFloat(document.getElementById('convCad').value) || 0;
@@ -576,11 +624,8 @@
         
         loadNBURates();
 
-        // Додаємо клік на Enter для пароля
         document.getElementById('dealerPin').addEventListener('keypress', function(e) {
-            if(e.key === 'Enter') {
-                submitDealerModal();
-            }
+            if(e.key === 'Enter') submitDealerModal();
         });
 
         const cityInput = document.getElementById('city');
@@ -670,7 +715,6 @@
         calc(); 
     }
 
-    // ЗВОРОТНИЙ РОЗРАХУНОК (від загального бюджету до ставки)
     function reverseCalc() {
         const targetTotal = parseFloat(document.getElementById('totalBudget').value) || 0;
         const bidInput = document.getElementById('bid');
@@ -684,10 +728,9 @@
 
         isReverse = true;
         let low = 0;
-        let high = targetTotal; // Ставка не може бути більшою за бюджет
+        let high = targetTotal;
         let bestBid = 0;
 
-        // Бінарний пошук ідеальної ставки
         while(low <= high) {
             let mid = Math.floor((low + high) / 2);
             let m = runMath(mid);
@@ -699,7 +742,7 @@
                 bestBid = mid;
                 break;
             } else if(currentTot < targetTotal) {
-                bestBid = mid; // Запам'ятовуємо найвищу ставку, яка ще влазить в бюджет
+                bestBid = mid;
                 low = mid + 1;
             } else {
                 high = mid - 1;
@@ -707,7 +750,7 @@
         }
 
         bidInput.value = bestBid;
-        calc(); // Оновлюємо UI з знайденою ставкою
+        calc(); 
     }
 
     function animateValue(id, start, end, duration) {
@@ -737,7 +780,6 @@
         return `<span style="color:var(--copart-blue); font-size:0.9em; margin-right:6px; font-weight:500;">(${uah} ₴)</span> <span style="color:var(--copart-blue); font-weight:800;">$${usd}</span>`;
     };
 
-    // ЧИСТА МАТЕМАТИКА (винесена для двостороннього розрахунку)
     function runMath(testBid) {
         const city = document.getElementById('city').value;
         const t = document.getElementById('type').value;
@@ -766,15 +808,32 @@
             }
         }
         
+        // Значення з меню "Корегування"
+        const corrSw = document.getElementById('corrSwift').value;
+        const corrLand = document.getElementById('corrLand').value;
+        const corrSea = document.getElementById('corrSea').value;
+        const corrCpx = document.getElementById('corrCpx').value;
+
+        // Комплекс
         let cpx = destSelect ? (parseFloat(destSelect.value) || 0) : 0;
         if (t === 'Pickup' && cpx > 0) cpx += 100;
+        const origCpx = cpx;
+        if (currentMode === 'dealer' && corrCpx !== "") cpx = parseFloat(corrCpx);
 
         const loc = db.copart[city] || db.iaai[city] || (db.canada && db.canada[city]);
         if (!loc) return null;
         
         const s = seaRates[loc.port] || { end: "Gdansk", Car: 0, SUV: 0, Pickup: 0, Motorcycle: 0 };
-        const land = (loc[t] === "Call" || !loc[t]) ? (loc["Car"] || 0) : loc[t];
-        const sea = s[t] || s["Car"] || 0;
+        
+        // Суша
+        const origLand = (loc[t] === "Call" || !loc[t]) ? (loc["Car"] || 0) : loc[t];
+        let land = origLand;
+        if (currentMode === 'dealer' && corrLand !== "") land = parseFloat(corrLand);
+
+        // Море
+        const origSea = s[t] || s["Car"] || 0;
+        let sea = origSea;
+        if (currentMode === 'dealer' && corrSea !== "") sea = parseFloat(corrSea);
         
         let table = db.iaai[city] ? iaF : (t === 'Motorcycle' ? cpM : cpS);
         const row = table.find(r => testBid <= r.m);
@@ -786,8 +845,11 @@
         let canTax = 0; let canDoc = 0;
         if (isCanada) { canTax = (testBid + fee) * loc.tax; canDoc = 170; }
 
+        // SWIFT
         const swiftCommission = isBidder ? 100 : 70;
-        const sw = ((testBid + fee + land + sea + canTax + canDoc) * 0.025 + swiftCommission);
+        const origSw = ((testBid + fee + land + sea + canTax + canDoc) * 0.025 + swiftCommission);
+        let sw = origSw;
+        if (currentMode === 'dealer' && corrSw !== "") sw = parseFloat(corrSw);
         
         let insuranceFee = 0;
         if (isIns) { insuranceFee = Math.max(100, (testBid + fee) * 0.015); }
@@ -850,6 +912,7 @@
         return {
             fee, sw, land, sea, canTax, canDoc, insuranceFee, dty, exc, vt, cst, electricFee, cpx,
             dlrTotal, pubTotal, pubDeliverySum, isCanada, isFirm, isBos, isBidder, isIns,
+            origSw, origLand, origSea, origCpx,
             firstRegUah, firstRegUsd, certUah, certUsd, mvsUah, mvsUsd,
             destNameShort, timelineCity, loc, s
         };
@@ -859,6 +922,26 @@
         const bid = parseFloat(document.getElementById('bid').value) || 0;
         const m = runMath(bid);
         if (!m) return;
+
+        // Оновлюємо підказки для Корегування (дефолтні значення)
+        document.getElementById('corrSwift').placeholder = Math.ceil(m.origSw);
+        document.getElementById('corrLand').placeholder = m.origLand;
+        document.getElementById('corrSea').placeholder = m.origSea;
+        document.getElementById('corrCpx').placeholder = m.origCpx;
+
+        // Змінюємо колір кнопки Корегування, якщо є активні зміни
+        const hasOverride = document.getElementById('corrSwift').value !== "" ||
+                            document.getElementById('corrLand').value !== "" ||
+                            document.getElementById('corrSea').value !== "" ||
+                            document.getElementById('corrCpx').value !== "";
+        const corrBtn = document.getElementById('correctionBtn');
+        if (hasOverride) {
+            corrBtn.classList.add('active-overrides');
+            corrBtn.innerText = "Корегування (Активовано)";
+        } else {
+            corrBtn.classList.remove('active-overrides');
+            corrBtn.innerText = "Корегування ⚙️";
+        }
 
         const f = (n) => "$" + Math.ceil(n).toLocaleString('uk-UA');
 
@@ -872,6 +955,7 @@
             document.getElementById('dealerLines').style.display = 'block';
             document.getElementById('publicLines').style.display = 'none';
             document.getElementById('containerPhotoBlock').style.display = 'block';
+            document.getElementById('correctionBlock').style.display = 'block';
             
             document.getElementById('complexLabel').innerText = m.destNameShort ? `Комплекс / Доставка (${m.destNameShort})` : `Комплекс / Доставка`;
             
@@ -925,6 +1009,7 @@
             document.getElementById('dealerLines').style.display = 'none';
             document.getElementById('publicLines').style.display = 'block';
             document.getElementById('containerPhotoBlock').style.display = 'none';
+            document.getElementById('correctionBlock').style.display = 'none';
 
             document.getElementById('pubDeliveryLabel').innerText = m.destNameShort ? `Повна вартість з доставкою (${m.destNameShort})` : `Повна вартість з доставкою`;
 
