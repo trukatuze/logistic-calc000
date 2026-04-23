@@ -438,16 +438,16 @@ const db = {
 };
 
 const seaRates = {
-  "New York": { "end": "Gdansk", "Car": 638, "SUV": 784, "Pickup": 1175, "Motorcycle": 638 },
-  "Savannah": { "end": "Gdansk", "Car": 638, "SUV": 784, "Pickup": 1175, "Motorcycle": 638 },
-  "Houston": { "end": "Gdansk", "Car": 713, "SUV": 917, "Pickup": 1375, "Motorcycle": 713 },
+  "New York": { "end": "Gdansk", "Car": 690, "SUV": 850, "Pickup": 1325, "Motorcycle": 690 },
+  "Savannah": { "end": "Gdansk", "Car": 690, "SUV": 850, "Pickup": 1325, "Motorcycle": 690 },
+  "Houston": { "end": "Gdansk", "Car": 780, "SUV": 980, "Pickup": 1425, "Motorcycle": 780 },
   "Chicago": { "end": "Klaipeda", "Car": 875, "SUV": 875, "Pickup": 1275, "Motorcycle": 450 },
   "Los Angeles": { "end": "Klaipeda", "Car": 1250, "SUV": 1250, "Pickup": 1725, "Motorcycle": 625 },
-  "Newark": { "end": "Klaipeda", "Car": 675, "SUV": 675, "Pickup": 975, "Motorcycle": 350 },
-  "Honolulu": { "end": "Klaipeda", "Car": 2275, "SUV": 2275, "Pickup": 3025, "Motorcycle": 1450 },
+  "Newark": { "end": "Klaipeda", "Car": 725, "SUV": 725, "Pickup": 1025, "Motorcycle": 375 },
+  "Honolulu": { "end": "Klaipeda", "Car": 2400, "SUV": 2400, "Pickup": 3125, "Motorcycle": 1450 },
   "Seattle": { "end": "Klaipeda", "Car": 1650, "SUV": 1650, "Pickup": 2225, "Motorcycle": 850 },
-  "Toronto": { "end": "Klaipeda", "Car": 900, "SUV": 900, "Pickup": 1300, "Motorcycle": 450 },
-  "Anchorage": { "end": "Klaipeda", "Car": 2500, "SUV": 3050, "Pickup": 3050, "Motorcycle": 1500 }
+  "Toronto": { "end": "Klaipeda", "Car": 900, "SUV": 900, "Pickup": 1300, "Motorcycle": 475 },
+  "Anchorage": { "end": "Klaipeda", "Car": 3300, "SUV": 3300, "Pickup": 3850, "Motorcycle": 1500 }
 };
 
 const complexRates = {
