@@ -425,15 +425,15 @@ const db = {
     "YORK SPRINGS - Pennsylvania - IAAI": { "Car": 325, "SUV": 325, "Motorcycle": 325, "Pickup": 525, "port": "New York" }
   },
   "canada": {
-    "CALGARY - Alberta - Copart/Impact": { "Car": 1500, "SUV": 1500, "Motorcycle": 1500, "Pickup": 1700, "port": "Toronto", "tax": 0.05 },
-    "EDMONTON - Alberta - Copart/Impact": { "Car": 1500, "SUV": 1500, "Motorcycle": 1500, "Pickup": 1700, "port": "Toronto", "tax": 0.05 },
-    "HALIFAX - Nova Scotia - Copart/Impact": { "Car": 1250, "SUV": 1250, "Motorcycle": 1250, "Pickup": 1450, "port": "Toronto", "tax": 0.15 },
-    "LONDON - Ontario - Copart/Impact": { "Car": 300, "SUV": 300, "Motorcycle": 300, "Pickup": 500, "port": "Toronto", "tax": 0.13 },
-    "MONCTON - New Brunswick - Copart/Impact": { "Car": 1325, "SUV": 1325, "Motorcycle": 1325, "Pickup": 1525, "port": "Toronto", "tax": 0.15 },
-    "MONTREAL - Quebec - Copart/Impact": { "Car": 550, "SUV": 550, "Motorcycle": 550, "Pickup": 750, "port": "Toronto", "tax": 0.15 },
-    "OTTAWA - Ontario - Copart/Impact": { "Car": 525, "SUV": 525, "Motorcycle": 525, "Pickup": 725, "port": "Toronto", "tax": 0.13 },
-    "ST. JOHN'S - Newfoundland - Copart/Impact": { "Car": 1900, "SUV": 1900, "Motorcycle": 1900, "Pickup": 2100, "port": "Toronto", "tax": 0.15 },
-    "TORONTO - Ontario - Copart/Impact": { "Car": 275, "SUV": 275, "Motorcycle": 275, "Pickup": 475, "port": "Toronto", "tax": 0.13 }
+    "CALGARY - Alberta - Copart/Impact": { "Car": 1500, "SUV": 1500, "Motorcycle": 1500, "Pickup": 1700, "port": "Toronto", "tax": 0.05, "taxName": "GST 5%" },
+    "EDMONTON - Alberta - Copart/Impact": { "Car": 1500, "SUV": 1500, "Motorcycle": 1500, "Pickup": 1700, "port": "Toronto", "tax": 0.05, "taxName": "GST 5%" },
+    "HALIFAX - Nova Scotia - Copart/Impact": { "Car": 1250, "SUV": 1250, "Motorcycle": 1250, "Pickup": 1450, "port": "Toronto", "tax": 0.15, "taxName": "HST 15%" },
+    "LONDON - Ontario - Copart/Impact": { "Car": 300, "SUV": 300, "Motorcycle": 300, "Pickup": 500, "port": "Toronto", "tax": 0.13, "taxName": "HST 13%" },
+    "MONCTON - New Brunswick - Copart/Impact": { "Car": 1325, "SUV": 1325, "Motorcycle": 1325, "Pickup": 1525, "port": "Toronto", "tax": 0.15, "taxName": "HST 15%" },
+    "MONTREAL - Quebec - Copart/Impact": { "Car": 550, "SUV": 550, "Motorcycle": 550, "Pickup": 750, "port": "Toronto", "tax": 0.05, "taxName": "GST 5%" },
+    "OTTAWA - Ontario - Copart/Impact": { "Car": 525, "SUV": 525, "Motorcycle": 525, "Pickup": 725, "port": "Toronto", "tax": 0.13, "taxName": "HST 13%" },
+    "ST. JOHN'S - Newfoundland - Copart/Impact": { "Car": 1900, "SUV": 1900, "Motorcycle": 1900, "Pickup": 2100, "port": "Toronto", "tax": 0.15, "taxName": "HST 15%" },
+    "TORONTO - Ontario - Copart/Impact": { "Car": 275, "SUV": 275, "Motorcycle": 275, "Pickup": 475, "port": "Toronto", "tax": 0.13, "taxName": "HST 13%" }
   }
 };
 
@@ -452,12 +452,13 @@ const seaRates = {
 
 const complexRates = {
   "Gdansk": [
-    { "name": "Рівне", "price": 900 },
-    { "name": "Львів", "price": 1050 },
-    { "name": "Київ", "price": 1150 },
-    { "name": "Івано-Франківськ", "price": 1250 }
+    { "name": "GDANSK Клевань Рівне", "price": 900 },
+    { "name": "GDANSK Клевань Львів", "price": 1050 },
+    { "name": "GDANSK Клевань Київ", "price": 1150 },
+    { "name": "GDANSK Клевань Івано-Франківськ", "price": 1250 },
+    { "name": "KLAIPEDA Зимна Вода Львів обл.", "price": 1150 }
   ],
   "Klaipeda": [
-    { "name": "Львів (Зимна Вода)", "price": 1150 }
+    { "name": "KLAIPEDA Зимна Вода Львів обл.", "price": 1150 }
   ]
 };
