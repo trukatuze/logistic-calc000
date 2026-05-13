@@ -137,13 +137,13 @@
         .input-with-currency input { padding-right: 50px; margin-bottom: 0; }
         .currency-indicator { position: absolute; right: 15px; top: 40%; transform: translateY(-50%); color: var(--text-muted); font-weight: 700; font-size: 0.9rem; pointer-events: none; }
 
-        /* НОВИЙ БЛОК: СТАВКА = РАЗОМ */
+        /* БЛОК: СТАВКА = РАЗОМ */
         .bid-total-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 15px; width: 100%; }
         .bid-total-row .half-col { flex: 1; min-width: 0; }
         .bid-total-row label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.65rem; }
         .equals-sign { font-size: 1.5rem; font-weight: 800; color: #64748b; padding-bottom: 11px; line-height: 1; }
 
-        /* ТУМБЛЕРИ (СВІТЧІ) */
+        /* ТУМБЛЕРИ */
         .toggles-container { margin: 15px 0 20px; display: flex; flex-direction: column; gap: 10px; }
         .toggle-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .toggle-row .labels { display: flex; flex-direction: column; gap: 2px; flex: 1; padding-right: 10px; }
@@ -173,7 +173,7 @@
         .total { background: linear-gradient(135deg, var(--asphalt-dark), var(--black-bg)); color: white; padding: 20px; border-radius: 10px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 1.25rem; border: 1px solid rgba(220, 38, 38, 0.3); box-shadow: 0 0 20px rgba(220, 38, 38, 0.15); }
         .total span:last-child { color: var(--em-red-light); font-size: 1.6rem; letter-spacing: -0.5px; text-shadow: 0 0 10px var(--em-red-glow); }
 
-        /* КОРЕГУВАННЯ (НОВИЙ БЛОК) */
+        /* КОРЕГУВАННЯ */
         .correction-btn {
             width: 100%; background: rgba(255,255,255,0.05); color: var(--text-muted);
             border: 1px dashed var(--border-color); border-radius: 10px; padding: 10px;
@@ -224,10 +224,6 @@
         .converter-grid label { font-size: 0.6rem; color: #cbd5e1; margin-bottom: 6px; line-height: 1.15; display: block; }
         .converter-grid input { padding: 8px; font-size: 0.95rem; text-align: center; margin-bottom: 0; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); font-weight: 700; width: 100%; box-sizing: border-box; }
         .converter-grid input:focus { border-color: var(--copart-blue); box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
-
-        .container-photo-box { margin-top: 20px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: var(--input-bg); text-align: center; padding-bottom: 8px; }
-        .container-photo-box img { width: 100%; height: auto; display: block; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .container-photo-caption { font-size: 0.7rem; color: var(--text-muted); margin-top: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
         .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); border-color: red;} 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); border-color: red;} 40%, 60% { transform: translate3d(4px, 0, 0); border-color: red;} }
@@ -378,7 +374,9 @@
             <div class="line"><span>Вартість лоту</span><span id="resBid">$0</span></div>
             <div class="line"><span>Аукціонний збір</span><span id="resFee">$0</span></div>
             
-            <div class="line" id="dlrCanTaxLine" style="display:none; font-weight:600; color: #f8fafc;"><span>Податок Канади (<span id="canTaxPercent">0</span>%)</span><span id="dlrCanTaxRes">$0</span></div>
+            <div class="line" id="dlrCanTaxLine" style="display:none; font-weight:600; color: #f8fafc;">
+                <span>Податок Канади (<span id="dlrCanTaxName"></span>)</span><span id="dlrCanTaxRes">$0</span>
+            </div>
             <div class="line" id="dlrCanDocLine" style="display:none; font-weight:600; color: #f8fafc;"><span>Канадські документи</span><span id="dlrCanDocRes">$170</span></div>
 
             <div class="line"><span>Трансфер (SWIFT)</span><span id="resSwift">$0</span></div>
@@ -406,6 +404,10 @@
                     <span class="rate-text" id="resRates">-</span>
                 </div>
             </div>
+        </div>
+
+        <div class="line" id="taxRefundLine" style="display:none; align-items: center; padding: 12px 0 0 0; font-size: 0.75rem; color: var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); border-bottom: none; margin-top: 10px;">
+            <span>TAX</span><span id="resTaxRefund" style="font-weight: 600; color: #cbd5e1; font-size: 1rem;">$0</span>
         </div>
 
         <div class="total"><span>РАЗОМ:</span><span id="resTotal">$0</span></div>
@@ -478,11 +480,6 @@
             </div>
         </div>
 
-        <div id="containerPhotoBlock" class="container-photo-box" style="display:none;">
-            <img src="container.jpg" alt="Завантаження в контейнер">
-            <div class="container-photo-caption">Можливе завантаження в контейнер</div>
-        </div>
-
     </div>
 </div>
 
@@ -543,7 +540,6 @@
         triggerCalc(); 
     }
 
-    // ЛОГІКА МЕНЮ КОРЕГУВАННЯ
     function toggleCorrectionMenu() {
         vibro(20);
         const menu = document.getElementById('correctionMenu');
@@ -668,9 +664,9 @@
             locDropdown.style.display = 'none';
             document.getElementById('dynamicAucLogo').style.display = 'none';
             document.getElementById('timelineUI').style.display = 'none';
-            document.getElementById('containerPhotoBlock').style.display = 'none';
             document.getElementById('dlrCanTaxLine').style.display = 'none';
             document.getElementById('dlrCanDocLine').style.display = 'none';
+            document.getElementById('taxRefundLine').style.display = 'none';
             cityInput.focus();
         });
 
@@ -686,7 +682,6 @@
         
         if (!loc) { 
             dynLogo.style.display = 'none'; 
-            document.getElementById('containerPhotoBlock').style.display = 'none';
             return; 
         }
         
@@ -701,7 +696,7 @@
         }
         
         const s = seaRates[loc.port];
-        if (s) {
+        if (s && complexRates[s.end]) {
             const dest = document.getElementById('destination');
             dest.innerHTML = '';
             complexRates[s.end].forEach(d => { let o = document.createElement('option'); o.value = d.price; o.text = d.name + " ($" + d.price + ")"; dest.appendChild(o); });
@@ -799,22 +794,21 @@
             let rawDestName = destSelect.options[destSelect.selectedIndex].text;
             let cleanName = rawDestName.split(' ($')[0]; 
             
-            if (cleanName === 'Львів (Зимна Вода)' || cleanName.includes('Зимна Вода')) {
-                destNameShort = "Зимна Вода";
-                timelineCity = "Зимна Вода";
-            } else {
-                destNameShort = cleanName;
-                timelineCity = cleanName.split(' (')[0]; 
-            }
+            destNameShort = cleanName;
+            
+            if (cleanName.includes('Зимна Вода')) timelineCity = "Зимна Вода";
+            else if (cleanName.includes('Рівне')) timelineCity = "Рівне";
+            else if (cleanName.includes('Львів')) timelineCity = "Львів";
+            else if (cleanName.includes('Київ')) timelineCity = "Київ";
+            else if (cleanName.includes('Івано-Франківськ')) timelineCity = "Ів-Франківськ";
+            else timelineCity = cleanName.split(' ')[1] || cleanName;
         }
         
-        // Значення з меню "Корегування"
         const corrSw = document.getElementById('corrSwift').value;
         const corrLand = document.getElementById('corrLand').value;
         const corrSea = document.getElementById('corrSea').value;
         const corrCpx = document.getElementById('corrCpx').value;
 
-        // Комплекс
         let cpx = destSelect ? (parseFloat(destSelect.value) || 0) : 0;
         if (t === 'Pickup' && cpx > 0) cpx += 100;
         const origCpx = cpx;
@@ -825,12 +819,20 @@
         
         const s = seaRates[loc.port] || { end: "Gdansk", Car: 0, SUV: 0, Pickup: 0, Motorcycle: 0 };
         
-        // Суша
-        const origLand = (loc[t] === "Call" || !loc[t]) ? (loc["Car"] || 0) : loc[t];
+        let actualEuPort = s.end;
+        if (destNameShort.includes("KLAIPEDA")) actualEuPort = "Klaipeda";
+        if (destNameShort.includes("GDANSK")) actualEuPort = "Gdansk";
+
+        let origLand = (loc[t] === "Call" || !loc[t]) ? (loc["Car"] || 0) : loc[t];
+        
+        if (s.end === "Gdansk" && actualEuPort === "Klaipeda") {
+            const staticRand = 100 + ((city.length * 13 + origLand) % 51);
+            origLand += staticRand;
+        }
+
         let land = origLand;
         if (currentMode === 'dealer' && corrLand !== "") land = parseFloat(corrLand);
 
-        // Море
         const origSea = s[t] || s["Car"] || 0;
         let sea = origSea;
         if (currentMode === 'dealer' && corrSea !== "") sea = parseFloat(corrSea);
@@ -842,10 +844,18 @@
         if (db.iaai[city]) fee += 20;
 
         let isCanada = !!(db.canada && db.canada[city]);
-        let canTax = 0; let canDoc = 0;
-        if (isCanada) { canTax = (testBid + fee) * loc.tax; canDoc = 170; }
+        let canTax = 0; 
+        let canDoc = 0;
+        let canTaxName = "";
+        let taxRefund = 0;
 
-        // SWIFT
+        if (isCanada) { 
+            canTax = (testBid + fee) * loc.tax; 
+            canDoc = 170; 
+            canTaxName = loc.taxName || `${(loc.tax * 100).toFixed(0)}%`;
+            taxRefund = Math.max(0, (canTax * 0.75) - 300);
+        }
+
         const swiftCommission = isBidder ? 100 : 70;
         const origSw = ((testBid + fee + land + sea + canTax + canDoc) * 0.025 + swiftCommission);
         let sw = origSw;
@@ -910,11 +920,11 @@
         let pubTotal = pubDeliverySum + cst;
 
         return {
-            fee, sw, land, sea, canTax, canDoc, insuranceFee, dty, exc, vt, cst, electricFee, cpx,
+            fee, sw, land, sea, canTax, canDoc, canTaxName, taxRefund, insuranceFee, dty, exc, vt, cst, electricFee, cpx,
             dlrTotal, pubTotal, pubDeliverySum, isCanada, isFirm, isBos, isBidder, isIns,
             origSw, origLand, origSea, origCpx,
             firstRegUah, firstRegUsd, certUah, certUsd, mvsUah, mvsUsd,
-            destNameShort, timelineCity, loc, s
+            destNameShort, timelineCity, loc, actualEuPort
         };
     }
 
@@ -923,13 +933,11 @@
         const m = runMath(bid);
         if (!m) return;
 
-        // Оновлюємо підказки для Корегування (дефолтні значення)
         document.getElementById('corrSwift').placeholder = Math.ceil(m.origSw);
         document.getElementById('corrLand').placeholder = m.origLand;
         document.getElementById('corrSea').placeholder = m.origSea;
         document.getElementById('corrCpx').placeholder = m.origCpx;
 
-        // Змінюємо колір кнопки Корегування, якщо є активні зміни
         const hasOverride = document.getElementById('corrSwift').value !== "" ||
                             document.getElementById('corrLand').value !== "" ||
                             document.getElementById('corrSea').value !== "" ||
@@ -954,7 +962,6 @@
         if (currentMode === 'dealer') {
             document.getElementById('dealerLines').style.display = 'block';
             document.getElementById('publicLines').style.display = 'none';
-            document.getElementById('containerPhotoBlock').style.display = 'block';
             document.getElementById('correctionBlock').style.display = 'block';
             
             document.getElementById('complexLabel').innerText = m.destNameShort ? `Комплекс / Доставка (${m.destNameShort})` : `Комплекс / Доставка`;
@@ -986,12 +993,16 @@
             if (m.isCanada) {
                 document.getElementById('dlrCanTaxLine').style.display = 'flex';
                 document.getElementById('dlrCanDocLine').style.display = 'flex';
-                document.getElementById('canTaxPercent').innerText = (m.loc.tax * 100).toFixed(0);
+                document.getElementById('taxRefundLine').style.display = 'flex';
+                
+                document.getElementById('dlrCanTaxName').innerText = m.canTaxName;
                 document.getElementById('dlrCanTaxRes').innerText = f(m.canTax);
                 document.getElementById('dlrCanDocRes').innerText = f(m.canDoc);
+                document.getElementById('resTaxRefund').innerText = f(m.taxRefund);
             } else {
                 document.getElementById('dlrCanTaxLine').style.display = 'none';
                 document.getElementById('dlrCanDocLine').style.display = 'none';
+                document.getElementById('taxRefundLine').style.display = 'none';
             }
             
             document.getElementById('resCustomsTotal').innerHTML = formatUahUsd(m.cst);
@@ -1008,13 +1019,19 @@
         } else {
             document.getElementById('dealerLines').style.display = 'none';
             document.getElementById('publicLines').style.display = 'block';
-            document.getElementById('containerPhotoBlock').style.display = 'none';
             document.getElementById('correctionBlock').style.display = 'none';
 
             document.getElementById('pubDeliveryLabel').innerText = m.destNameShort ? `Повна вартість з доставкою (${m.destNameShort})` : `Повна вартість з доставкою`;
 
             const t = document.getElementById('type').value;
             document.getElementById('pubCustomsLabel').innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
+
+            if (m.isCanada) {
+                document.getElementById('taxRefundLine').style.display = 'flex';
+                document.getElementById('resTaxRefund').innerText = f(m.taxRefund);
+            } else {
+                document.getElementById('taxRefundLine').style.display = 'none';
+            }
 
             document.getElementById('pubDeliveryRes').innerText = f(m.pubDeliverySum);
             document.getElementById('pubCustomsRes').innerText = f(m.cst);
@@ -1028,14 +1045,16 @@
 
         document.getElementById('timelineUI').style.display = 'flex';
         document.getElementById('tlStart').innerText = m.loc.port;
-        document.getElementById('tlEU').innerText = m.s.end;
+        
+        document.getElementById('tlEU').innerText = m.actualEuPort;
+        document.getElementById('flagEU').innerText = (m.actualEuPort === 'Gdansk') ? '🇵🇱' : '🇱🇹';
+        
         document.getElementById('tlDest').innerText = m.timelineCity; 
         document.getElementById('flagUA').innerText = '🇺🇦';
         document.getElementById('flagStart').innerText = (m.loc.port === 'Toronto' || m.loc.port.includes('Alberta') || m.loc.port.includes('Halifax')) ? '🇨🇦' : '🇺🇸';
-        document.getElementById('flagEU').innerText = (m.s.end === 'Gdansk') ? '🇵🇱' : '🇱🇹';
 
         const euToUaLine = document.getElementById('euToUaLine');
-        euToUaLine.className = (m.s.end === 'Gdansk') ? 'tl-line line-train' : 'tl-line line-truck';
+        euToUaLine.className = (m.actualEuPort === 'Gdansk') ? 'tl-line line-train' : 'tl-line line-truck';
     }
 </script>
 </body>
