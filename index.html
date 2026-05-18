@@ -695,6 +695,7 @@
             dynLogo.innerHTML = '<span class="logo-iaa">IAA</span>'; 
         }
         
+        // Тут використовується complexRates, який береться з файлу full_db.js
         const s = seaRates[loc.port];
         if (s && complexRates[s.end]) {
             const dest = document.getElementById('destination');
@@ -1026,12 +1027,7 @@
             const t = document.getElementById('type').value;
             document.getElementById('pubCustomsLabel').innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
 
-            if (m.isCanada) {
-                document.getElementById('taxRefundLine').style.display = 'flex';
-                document.getElementById('resTaxRefund').innerText = f(m.taxRefund);
-            } else {
-                document.getElementById('taxRefundLine').style.display = 'none';
-            }
+            document.getElementById('taxRefundLine').style.display = 'none';
 
             document.getElementById('pubDeliveryRes').innerText = f(m.pubDeliverySum);
             document.getElementById('pubCustomsRes').innerText = f(m.cst);
