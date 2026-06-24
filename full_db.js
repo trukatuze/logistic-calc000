@@ -456,7 +456,7 @@ const complexRates = {
     { "name": "GDANSK Клевань Львів", "price": 1050 },
     { "name": "GDANSK Клевань Київ", "price": 1150 },
     { "name": "GDANSK Клевань Івано-Франківськ", "price": 1250 },
-    { "name": "KLAIPEDA Зимна Вода Львів обл.", "price": 1150 }
+    { "name": "KLAIPEDA Зимна Вода Львів обл.", "price": 1200 }
   ],
   "Klaipeda": [
     { "name": "KLAIPEDA Зимна Вода Львів обл.", "price": 1150 }
