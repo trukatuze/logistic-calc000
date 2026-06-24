@@ -459,6 +459,6 @@ const complexRates = {
     { "name": "KLAIPEDA Зимна Вода Львів обл.", "price": 1200 }
   ],
   "Klaipeda": [
-    { "name": "KLAIPEDA Зимна Вода Львів обл.", "price": 1150 }
+    { "name": "KLAIPEDA Зимна Вода Львів обл.", "price": 1200 }
   ]
 };
