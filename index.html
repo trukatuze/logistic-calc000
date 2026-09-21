@@ -122,10 +122,20 @@
         }
         input:focus, select:focus { border-color: var(--em-red); box-shadow: 0 0 0 3px var(--em-red-glow); }
 
-        .search-container { position: relative; margin-bottom: 15px; }
+        .search-container { position: relative; margin-bottom: 6px; }
         .search-container input { margin-bottom: 0; padding-right: 40px; }
         .clear-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); font-size: 24px; line-height: 1; cursor: pointer; padding: 0; display: none; }
         .clear-btn:active { color: var(--em-red-light); }
+
+        .sublot-offsite-note {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            margin-top: -5px;
+            margin-bottom: 15px;
+            line-height: 1.3;
+            letter-spacing: 0.2px;
+            text-align: center;
+        }
 
         .results-dropdown { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: var(--asphalt-light); border: 1px solid var(--border-color); border-radius: 10px; max-height: 220px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .result-item { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-size: 0.95rem; color: var(--text-main); transition: background 0.2s;}
@@ -257,6 +267,7 @@
         </div>
     </div>
 
+    <!-- Вкладки калькуляторів -->
     <div class="calc-options">
         <div class="mode-btn active" id="btnPublic" onclick="activatePublicMode()">LOGISTIC CALCULATOR</div>
         <div class="mode-btn" id="btnDealer" onclick="openDealerModal()">DEALERS ONLY CALCULATOR</div>
@@ -276,7 +287,7 @@
         </div>
         <div style="width: 100%;">
             <label>Рік випуску (шильдик)</label>
-            <input type="number" id="year" value="2020" oninput="triggerCalc()">
+            <select id="year" onchange="triggerCalc()"></select>
         </div>
     </div>
     
@@ -289,6 +300,10 @@
         <input type="text" id="city" placeholder="Почніть вводити місто..." autocomplete="off">
         <button type="button" id="clearBtn" class="clear-btn">&times;</button>
         <div id="locList" class="results-dropdown"></div>
+    </div>
+
+    <div class="sublot-offsite-note">
+        Sublot та Offsite локації можуть тарифікуватися:<br>Sublot location 1 миля = 1 дол ; Offsite 1 миля = 1 дол
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: flex-end;">
@@ -380,14 +395,13 @@
             <div class="line" id="dlrCanDocLine" style="display:none; font-weight:600; color: #f8fafc;"><span>Канадські документи</span><span id="dlrCanDocRes">$170</span></div>
 
             <div class="line"><span>Трансфер (SWIFT)</span><span id="resSwift">$0</span></div>
-            <div class="line"><span>Суша по США/Канаді</span><span id="resLand">$0</span></div>
-            <div class="line"><span>Морський фрахт</span><span id="resSea">$0</span></div>
-            <div class="line"><span id="complexLabel">Комплекс / Доставка</span><span id="resComplex">$0</span></div>
+            <div class="line"><span>Логістика по Америці та морський фрахт</span><span id="resLandSea">$0</span></div>
+            <div class="line"><span id="complexLabel">Доставка</span><span id="resComplex">$0</span></div>
             
             <div class="line" id="lineEvSurcharge" style="display:none; font-weight:600; color: var(--em-red-light);"><span style="color:var(--em-red-light)">EV Surcharge</span><span id="resEvSurcharge" style="color:var(--em-red-light)">$0</span></div>
             
             <div class="line" id="dlrFirmLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Юр. особа</span><span id="dlrFirmRes" style="color:var(--copart-blue)">$60</span></div>
-            <div class="line" id="dlrBosLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Документи (Bill of Sale)</span><span id="dlrBosRes" style="color:var(--copart-blue)">$250</span></div>
+            <div class="line" id="dlrBosLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Документи (Bill of Sale)</span><span id="dlrBosRes" style="color:var(--copart-blue)">$450</span></div>
             <div class="line" id="dlrBidderLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Bidder (Закриті аукціони)</span><span id="dlrBidderRes" style="color:var(--copart-blue)">$300</span></div>
             <div class="line" id="dlrInsLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Страхування</span><span id="dlrInsRes" style="color:var(--copart-blue)">$0</span></div>
 
@@ -407,11 +421,12 @@
         </div>
 
         <div class="line" id="taxRefundLine" style="display:none; align-items: center; padding: 12px 0 0 0; font-size: 0.75rem; color: var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); border-bottom: none; margin-top: 10px;">
-            <span>TAX</span><span id="resTaxRefund" style="font-weight: 600; color: #cbd5e1; font-size: 1rem;">$0</span>
+            <span>Орієнтовне повернення TAX</span><span id="resTaxRefund" style="font-weight: 600; color: #cbd5e1; font-size: 1rem;">$0</span>
         </div>
 
         <div class="total"><span>РАЗОМ:</span><span id="resTotal">$0</span></div>
 
+        <!-- ІНСТРУМЕНТ КОРЕГУВАННЯ -->
         <div id="correctionBlock" style="display:none; width: 100%;">
             <button id="correctionBtn" class="correction-btn" onclick="toggleCorrectionMenu()">Корегування ⚙️</button>
             <div id="correctionMenu" class="correction-menu">
@@ -430,7 +445,7 @@
                         <input type="number" id="corrSea" placeholder="0">
                     </div>
                     <div>
-                        <label>Комплекс / Доставка</label>
+                        <label>Доставка</label>
                         <input type="number" id="corrCpx" placeholder="0">
                     </div>
                 </div>
@@ -457,7 +472,7 @@
         <div class="timeline" id="timelineUI" style="display:none;">
             <div class="tl-step"><span class="tl-icon" id="flagStart">🇺🇸</span><span class="tl-text" id="tlStart">Port</span></div>
             <div class="tl-line line-ship"></div>
-            <div class="tl-step"><span class="tl-icon" id="flagEU">🇪🇺</span><span class="tl-text" id="tlEU">Port</span></div>
+            <div class="tl-step"><span class="tl-icon" id="flagEU">🇱🇹</span><span class="tl-text" id="tlEU">Klaipeda</span></div>
             <div class="tl-line line-truck" id="euToUaLine"></div>
             <div class="tl-step"><span class="tl-icon" id="flagUA">🇺🇦</span><span class="tl-text" id="tlDest">Львів</span></div>
         </div>
@@ -484,6 +499,25 @@
 </div>
 
 <script>
+    // Відстань Левенштейна для нечіткого пошуку локацій
+    function getEditDistance(a, b) {
+        if(a.length === 0) return b.length;
+        if(b.length === 0) return a.length;
+        let matrix = [];
+        for(let i = 0; i <= b.length; i++) matrix[i] = [i];
+        for(let j = 0; j <= a.length; j++) matrix[0][j] = j;
+        for(let i = 1; i <= b.length; i++) {
+            for(let j = 1; j <= a.length; j++) {
+                if(b.charAt(i-1) === a.charAt(j-1)) {
+                    matrix[i][j] = matrix[i-1][j-1];
+                } else {
+                    matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, Math.min(matrix[i][j-1] + 1, matrix[i-1][j] + 1));
+                }
+            }
+        }
+        return matrix[b.length][a.length];
+    }
+
     const cpS = [{m:49.99,f:1},{m:99.99,f:1},{m:199.99,f:25},{m:299.99,f:60},{m:349.99,f:85},{m:399.99,f:100},{m:449.99,f:125},{m:499.99,f:135},{m:549.99,f:145},{m:599.99,f:155},{m:699.99,f:170},{m:799.99,f:195},{m:899.99,f:215},{m:999.99,f:230},{m:1199.99,f:250},{m:1299.99,f:270},{m:1399.99,f:285},{m:1499.99,f:300},{m:1599.99,f:315},{m:1699.99,f:330},{m:1799.99,f:350},{m:1999.99,f:370},{m:2399.99,f:390},{m:2499.99,f:425},{m:2999.99,f:460},{m:3499.99,f:505},{m:3999.99,f:555},{m:4499.99,f:600},{m:4999.99,f:625},{m:5499.99,f:650},{m:5999.99,f:675},{m:6499.99,f:700},{m:6999.99,f:720},{m:7499.99,f:755},{m:7999.99,f:775},{m:8499.99,f:800},{m:8999.99,f:820},{m:9999.99,f:820},{m:10499.99,f:850},{m:10999.99,f:850},{m:11499.99,f:850},{m:11999.99,f:860},{m:12499.99,f:875},{m:14999.99,f:890},{m:Infinity,p:0.06}];
     const cpM = [{m:49.99,f:30},{m:99.99,f:45},{m:199.99,f:70},{m:299.99,f:105},{m:349.99,f:130},{m:399.99,f:132.5},{m:449.99,f:145},{m:499.99,f:150},{m:549.99,f:165},{m:599.99,f:170},{m:699.99,f:190},{m:799.99,f:225},{m:899.99,f:250},{m:999.99,f:270},{m:1199.99,f:300},{m:1299.99,f:335},{m:1399.99,f:335},{m:1499.99,f:360},{m:1599.99,f:370},{m:1699.99,f:400},{m:1799.99,f:415},{m:1999.99,f:465},{m:2399.99,f:500},{m:2499.99,f:510},{m:2999.99,f:570},{m:3499.99,f:695},{m:3999.99,f:710},{m:4499.99,f:710},{m:4999.99,f:720},{m:5499.99,f:780},{m:5999.99,f:815},{m:6499.99,f:850},{m:6999.99,f:880},{m:7499.99,f:900},{m:7999.99,f:1020},{m:8999.99,f:1025},{m:9999.99,f:1050},{m:Infinity,p:0.105}];
     const iaF = [{m:99.99,f:1},{m:199.99,f:25},{m:299.99,f:60},{m:349.99,f:85},{m:399.99,f:100},{m:449.99,f:125},{m:499.99,f:135},{m:549.99,f:145},{m:599.99,f:155},{m:699.99,f:170},{m:799.99,f:195},{m:899.99,f:215},{m:999.99,f:230},{m:1199.99,f:250},{m:1299.99,f:270},{m:1399.99,f:285},{m:1499.99,f:300},{m:1599.99,f:315},{m:1699.99,f:330},{m:1799.99,f:350},{m:1999.99,f:370},{m:2399.99,f:390},{m:2499.99,f:425},{m:2999.99,f:460},{m:3499.99,f:505},{m:3999.99,f:555},{m:4499.99,f:600},{m:4999.99,f:625},{m:5499.99,f:650},{m:5999.99,f:675},{m:6499.99,f:700},{m:6999.99,f:720},{m:7499.99,f:755},{m:7999.99,f:775},{m:8499.99,f:800},{m:8999.99,f:820},{m:9999.99,f:820},{m:11499.99,f:850},{m:11999.99,f:860},{m:12499.99,f:875},{m:14999.99,f:890},{m:Infinity,p:0.06}];
@@ -609,6 +643,16 @@
     }
 
     window.onload = () => {
+        const yearSelect = document.getElementById('year');
+        const currentYear = new Date().getFullYear();
+        for (let y = currentYear; y >= 2000; y--) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            if (y === 2020) opt.selected = true;
+            yearSelect.appendChild(opt);
+        }
+
         if (typeof db === 'undefined') { document.getElementById('dbStatus').innerText = "❌ База не знайдена"; return; }
         
         let keys = [...Object.keys(db.copart), ...Object.keys(db.iaai)];
@@ -630,14 +674,34 @@
 
         cityInput.addEventListener('input', function() {
             clearBtn.style.display = this.value.length > 0 ? 'block' : 'none';
-            const query = this.value.toUpperCase();
+            const query = this.value.trim().toUpperCase();
             locDropdown.innerHTML = '';
             
             if (query.length < 1) { locDropdown.style.display = 'none'; return; }
-            const filtered = keys.filter(k => k.toUpperCase().includes(query)).slice(0, 20);
 
-            if (filtered.length > 0) {
-                filtered.forEach(loc => {
+            let matched = keys.filter(k => k.toUpperCase().includes(query));
+
+            // Нечіткий пошук (Fuzzy Search)
+            if (matched.length === 0 && query.length >= 2) {
+                let scored = keys.map(k => {
+                    let kWords = k.toUpperCase().split(/[\s-]+/);
+                    let minDist = getEditDistance(query, k.toUpperCase().substring(0, query.length));
+                    
+                    for (let w of kWords) {
+                        if (w.length >= query.length - 1) {
+                            let d = getEditDistance(query, w.substring(0, Math.max(query.length, 3)));
+                            if (d < minDist) minDist = d;
+                        }
+                    }
+                    return { key: k, dist: minDist };
+                });
+                
+                scored = scored.filter(item => item.dist <= 2).sort((a,b) => a.dist - b.dist);
+                matched = scored.slice(0, 10).map(item => item.key);
+            }
+
+            if (matched.length > 0) {
+                matched.slice(0, 20).forEach(loc => {
                     const div = document.createElement('div');
                     div.className = 'result-item';
                     div.textContent = loc;
@@ -695,13 +759,14 @@
             dynLogo.innerHTML = '<span class="logo-iaa">IAA</span>'; 
         }
         
-        // Тут використовується complexRates, який береться з файлу full_db.js
-        const s = seaRates[loc.port];
-        if (s && complexRates[s.end]) {
-            const dest = document.getElementById('destination');
-            dest.innerHTML = '';
-            complexRates[s.end].forEach(d => { let o = document.createElement('option'); o.value = d.price; o.text = d.name + " ($" + d.price + ")"; dest.appendChild(o); });
-        }
+        // Лише напрямок Klaipeda
+        const dest = document.getElementById('destination');
+        dest.innerHTML = '';
+        const opt = document.createElement('option');
+        opt.value = 1200;
+        opt.text = "KLAIPEDA - Зимна Вода (Львів обл.) ($1200)";
+        dest.appendChild(opt);
+
         triggerCalc();
     }
 
@@ -784,7 +849,7 @@
         const isFirm = document.getElementById('toggleFirm').checked;
         const firmFee = isFirm ? 60 : 0;
         const isBos = document.getElementById('toggleBos').checked;
-        const bosFee = isBos ? 250 : 0;
+        const bosFee = isBos ? 450 : 0; 
         const isBidder = document.getElementById('toggleBidder').checked;
         const bidderFee = isBidder ? 300 : 0;
         const isIns = document.getElementById('toggleIns').checked;
@@ -815,19 +880,26 @@
         const origCpx = cpx;
         if (currentMode === 'dealer' && corrCpx !== "") cpx = parseFloat(corrCpx);
 
-        const loc = db.copart[city] || db.iaai[city] || (db.canada && db.canada[city]);
+        // БЕЗПЕЧНА ПЕРЕВІРКА ЛОКАЦІЇ (Fuzzy-результат)
+        let exactCity = Object.keys(db.copart).find(k => k === city) || 
+                        Object.keys(db.iaai).find(k => k === city) || 
+                        (db.canada && Object.keys(db.canada).find(k => k === city));
+        
+        if (!exactCity) return null;
+
+        const loc = db.copart[exactCity] || db.iaai[exactCity] || (db.canada && db.canada[exactCity]);
         if (!loc) return null;
         
-        const s = seaRates[loc.port] || { end: "Gdansk", Car: 0, SUV: 0, Pickup: 0, Motorcycle: 0 };
+        // Знаходимо seaRates безпечно (уникаємо помилки TypeError, якщо порт не знайдено)
+        const seaRatesDB = typeof seaRates !== 'undefined' ? seaRates : {};
+        const s = seaRatesDB[loc.port] || { end: "Gdansk", Car: 0, SUV: 0, Pickup: 0, Motorcycle: 0 };
         
-        let actualEuPort = s.end;
-        if (destNameShort.includes("KLAIPEDA")) actualEuPort = "Klaipeda";
-        if (destNameShort.includes("GDANSK")) actualEuPort = "Gdansk";
+        const actualEuPort = "Klaipeda";
 
         let origLand = (loc[t] === "Call" || !loc[t]) ? (loc["Car"] || 0) : loc[t];
         
-        if (s.end === "Gdansk" && actualEuPort === "Klaipeda") {
-            const staticRand = 100 + ((city.length * 13 + origLand) % 51);
+        if (s.end === "Gdansk") {
+            const staticRand = 100 + ((exactCity.length * 13 + origLand) % 51);
             origLand += staticRand;
         }
 
@@ -838,13 +910,13 @@
         let sea = origSea;
         if (currentMode === 'dealer' && corrSea !== "") sea = parseFloat(corrSea);
         
-        let table = db.iaai[city] ? iaF : (t === 'Motorcycle' ? cpM : cpS);
+        let table = db.iaai[exactCity] ? iaF : (t === 'Motorcycle' ? cpM : cpS);
         const row = table.find(r => testBid <= r.m);
         let fee = row ? (row.p ? testBid * row.p : row.f) : (testBid * 0.06);
         fee += 300; 
-        if (db.iaai[city]) fee += 20;
+        if (db.iaai[exactCity]) fee += 20;
 
-        let isCanada = !!(db.canada && db.canada[city]);
+        let isCanada = !!(db.canada && db.canada[exactCity]);
         let canTax = 0; 
         let canDoc = 0;
         let canTaxName = "";
@@ -877,7 +949,9 @@
         if (fuel === 'electric' || fuel === 'hybrid') electricFee = 200;
 
         if (fuel === 'electric') {
-            dty = 0; exc = vol * crossRateEurUsd; vt = (cBasis + dty + exc) * 0.20; 
+            dty = 0; 
+            exc = vol * crossRateEurUsd; 
+            vt = (cBasis + dty + exc) * 0.20; 
         } else if (t === 'Motorcycle') {
             dty = cBasis * 0.10;
             let motoRate = (vol <= 500) ? 0.062 : ((vol <= 800) ? 0.443 : 0.447);
@@ -887,8 +961,8 @@
             dty = cBasis * 0.10;
             let age = Math.min(15, Math.max(1, new Date().getFullYear() - yr - 1));
             const CUSTOM_RATE = crossRateEurUsd; 
-            if (fuel === 'hybrid') exc = 100 * CUSTOM_RATE;
-            else if (fuel === 'petrol') {
+            
+            if (fuel === 'petrol' || fuel === 'hybrid') {
                 const base = (vol <= 3000) ? 50 : 100;
                 exc = base * (vol / 1000) * age * CUSTOM_RATE;
             } else if (fuel === 'diesel') {
@@ -965,7 +1039,7 @@
             document.getElementById('publicLines').style.display = 'none';
             document.getElementById('correctionBlock').style.display = 'block';
             
-            document.getElementById('complexLabel').innerText = m.destNameShort ? `Комплекс / Доставка (${m.destNameShort})` : `Комплекс / Доставка`;
+            document.getElementById('complexLabel').innerText = m.destNameShort ? `Доставка (${m.destNameShort})` : `Доставка`;
             
             const t = document.getElementById('type').value;
             document.getElementById('customsTitle').innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
@@ -973,8 +1047,7 @@
             document.getElementById('resBid').innerText = f(bid);
             document.getElementById('resFee').innerText = f(m.fee);
             document.getElementById('resSwift').innerText = f(m.sw);
-            document.getElementById('resLand').innerText = f(m.land);
-            document.getElementById('resSea').innerText = f(m.sea);
+            document.getElementById('resLandSea').innerText = f(m.land + m.sea);
             document.getElementById('resComplex').innerText = f(m.cpx);
             
             document.getElementById('lineEvSurcharge').style.display = m.electricFee > 0 ? 'flex' : 'none';
@@ -1042,15 +1115,15 @@
         document.getElementById('timelineUI').style.display = 'flex';
         document.getElementById('tlStart').innerText = m.loc.port;
         
-        document.getElementById('tlEU').innerText = m.actualEuPort;
-        document.getElementById('flagEU').innerText = (m.actualEuPort === 'Gdansk') ? '🇵🇱' : '🇱🇹';
+        document.getElementById('tlEU').innerText = "Klaipeda";
+        document.getElementById('flagEU').innerText = '🇱🇹';
         
         document.getElementById('tlDest').innerText = m.timelineCity; 
         document.getElementById('flagUA').innerText = '🇺🇦';
         document.getElementById('flagStart').innerText = (m.loc.port === 'Toronto' || m.loc.port.includes('Alberta') || m.loc.port.includes('Halifax')) ? '🇨🇦' : '🇺🇸';
 
         const euToUaLine = document.getElementById('euToUaLine');
-        euToUaLine.className = (m.actualEuPort === 'Gdansk') ? 'tl-line line-train' : 'tl-line line-truck';
+        euToUaLine.className = 'tl-line line-truck';
     }
 </script>
 </body>
