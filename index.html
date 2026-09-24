@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EM SHIPPING | Logistic Calculator</title>
     <script src="full_db.js"></script>
+    
+    <!-- Підключення карти Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
@@ -26,14 +31,100 @@
             font-family: 'Outfit', sans-serif; 
             background: radial-gradient(circle at top center, var(--asphalt-light), var(--black-bg)); 
             color: var(--text-main);
-            display: flex; justify-content: center; padding: 20px 10px; margin: 0; min-height: 100vh;
+            margin: 0; 
+            padding: 0; 
+            min-height: 100vh;
         }
 
+        /* ГОЛОВНИЙ КОНТЕЙНЕР (МАПА + КАЛЬКУЛЯТОР) */
+        .main-wrapper {
+            display: flex;
+            flex-direction: row;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 25px;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* МАПА ЛІВОРУЧ */
+        .map-container {
+            flex: 1;
+            min-width: 300px;
+            background: #0f172a;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+            height: calc(100vh - 40px);
+            position: sticky;
+            top: 20px;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .map-overlay-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-weight: 800;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            color: var(--text-main);
+            backdrop-filter: blur(5px);
+            pointer-events: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .map-overlay-title span { color: var(--copart-blue); }
+
+        #map { 
+            flex: 1; 
+            width: 100%; 
+            height: 100%;
+            background: #0f172a; 
+            border-radius: 16px;
+        }
+
+        /* КАЛЬКУЛЯТОР ПРАВОРУЧ */
         .card { 
             background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            width: 100%; max-width: 450px; border-radius: 16px; padding: 30px 25px; 
+            width: 100%; max-width: 450px; flex: 0 0 450px; border-radius: 16px; padding: 30px 25px; 
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05); 
             border: 1px solid rgba(255,255,255,0.05); animation: fadeIn 0.5s ease-out; position: relative;
+            box-sizing: border-box;
+        }
+
+        /* МОБІЛЬНА АДАПТАЦІЯ */
+        @media (max-width: 950px) {
+            .main-wrapper {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px;
+                gap: 15px;
+            }
+            .card {
+                flex: none;
+                width: 100%;
+                max-width: 100%;
+                order: 1;
+            }
+            .map-container {
+                width: 100%;
+                height: 400px;
+                position: relative;
+                top: 0;
+                order: 2; /* Карта з самого низу */
+                margin-bottom: 20px;
+            }
         }
 
         @keyframes fadeIn {
@@ -41,11 +132,24 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* PARTNERS ROW */
-        .partners-row {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        /* Кастомні маркери на карті */
+        .map-marker-state .dot { width: 14px; height: 14px; background: var(--em-red-light); border-radius: 50%; box-shadow: 0 0 15px var(--em-red-light); border: 2px solid white; transform: translate(-50%, -50%); position: absolute; top: 50%; left: 50%;}
+        .map-marker-port .dot { width: 14px; height: 14px; background: var(--copart-blue); border-radius: 50%; box-shadow: 0 0 15px var(--copart-blue); border: 2px solid white; transform: translate(-50%, -50%); position: absolute; top: 50%; left: 50%;}
+        .animated-route { stroke-dasharray: 10; animation: dash 20s linear infinite; }
+        @keyframes dash { to { stroke-dashoffset: -1000; } }
+
+        /* Стилі попапів на карті */
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background: rgba(15, 23, 42, 0.95) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 8px !important;
+            backdrop-filter: blur(10px);
         }
+        .leaflet-container { font-family: 'Outfit', sans-serif !important; }
+
+        /* PARTNERS ROW */
+        .partners-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .partner-link { text-decoration: none; opacity: 0.6; transition: all 0.3s ease; font-size: 1.1rem; line-height: 1; }
         .partner-link:hover { opacity: 1; transform: scale(1.05); }
         .logo-bidcars { color: #f8fafc; font-weight: 900; font-style: italic; letter-spacing: -0.5px; }
@@ -57,55 +161,24 @@
         /* BRAND HEADER */
         .brand-header { text-align: center; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; }
         .logo-box { display: inline-flex; flex-direction: column; align-items: center; }
-        .brand-em { 
-            font-size: 5.5rem; font-weight: 900; line-height: 0.8; color: var(--em-red); 
-            margin: 0; transform: scaleX(1.5); display: inline-block;
-        }
-        .brand-shipping { 
-            width: 100%; display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 900; 
-            color: var(--text-muted); margin-top: 15px; padding: 0 5px; box-sizing: border-box;
-        }
+        .brand-em { font-size: 5.5rem; font-weight: 900; line-height: 0.8; color: var(--em-red); margin: 0; transform: scaleX(1.5); display: inline-block; }
+        .brand-shipping { width: 100%; display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 900; color: var(--text-muted); margin-top: 15px; padding: 0 5px; box-sizing: border-box; }
         .brand-shipping span { color: #cbd5e1; }
 
         /* ОНОВЛЕНІ КНОПКИ-ВКЛАДКИ */
-        .calc-options { 
-            display: flex; width: 100%; margin: 15px 0 25px;
-            background: rgba(0,0,0,0.4); padding: 5px; border-radius: 12px; 
-            border: 1px solid rgba(255,255,255,0.05); box-sizing: border-box;
-            box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);
-        }
-        .mode-btn {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            font-size: clamp(0.65rem, 3.5vw, 0.8rem); font-weight: 700; color: #64748b; 
-            text-transform: uppercase; cursor: pointer; 
-            padding: 12px 5px; border-radius: 8px; transition: all 0.3s ease;
-            text-align: center; line-height: 1.2; box-sizing: border-box;
-        }
+        .calc-options { display: flex; width: 100%; margin: 15px 0 25px; background: rgba(0,0,0,0.4); padding: 5px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); box-sizing: border-box; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); }
+        .mode-btn { flex: 1; display: flex; align-items: center; justify-content: center; font-size: clamp(0.65rem, 3.5vw, 0.8rem); font-weight: 700; color: #64748b; text-transform: uppercase; cursor: pointer; padding: 12px 5px; border-radius: 8px; transition: all 0.3s ease; text-align: center; line-height: 1.2; box-sizing: border-box; }
         .mode-btn:hover { color: #f8fafc; }
-        .mode-btn.active {
-            color: #ffffff; background: var(--copart-blue); 
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); font-weight: 800;
-        }
+        .mode-btn.active { color: #ffffff; background: var(--copart-blue); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); font-weight: 800; }
 
         /* ВІКНО ПАРОЛЮ */
-        .dealer-modal {
-            position: absolute; top: 0; left: 0; right: 0;
-            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-radius: 16px; padding: 35px 25px; z-index: 100;
-            clip-path: inset(0 0 100% 0); transition: clip-path 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            border-bottom: 2px solid var(--copart-blue); box-shadow: 0 15px 40px rgba(0,0,0,0.8); text-align: center;
-        }
+        .dealer-modal { position: absolute; top: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 16px; padding: 35px 25px; z-index: 100; clip-path: inset(0 0 100% 0); transition: clip-path 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 2px solid var(--copart-blue); box-shadow: 0 15px 40px rgba(0,0,0,0.8); text-align: center; }
         .dealer-modal.open { clip-path: inset(0 0 0 0); }
         .dealer-modal label { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; display: block; }
-        .dealer-modal input {
-            text-align: center; font-size: 2rem; font-weight: 800; letter-spacing: 15px; width: 70%; margin: 0 auto 20px; display: block; padding: 10px;
-            background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); outline: none;
-        }
+        .dealer-modal input { text-align: center; font-size: 2rem; font-weight: 800; letter-spacing: 15px; width: 70%; margin: 0 auto 20px; display: block; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); outline: none; }
         .dealer-modal input:focus { border-color: var(--copart-blue); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
         .modal-actions { display: flex; gap: 10px; justify-content: center; }
-        .modal-actions button {
-            flex: 1; padding: 14px; border-radius: 10px; font-weight: 700; font-family: inherit; font-size: 0.9rem; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
-        }
+        .modal-actions button { flex: 1; padding: 14px; border-radius: 10px; font-weight: 700; font-family: inherit; font-size: 0.9rem; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .btn-cancel { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); }
         .btn-cancel:hover { background: #334155; }
         .btn-ok { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.4); color: var(--copart-blue); }
@@ -115,11 +188,7 @@
         .status.success { background: rgba(34, 197, 94, 0.1); color: #4ade80; border-color: rgba(34, 197, 94, 0.2); }
 
         label { display: block; line-height: 1.3; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        input, select { 
-            font-family: inherit; font-weight: 500; width: 100%; padding: 14px 15px; 
-            background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; font-size: 16px; 
-            margin-bottom: 15px; box-sizing: border-box; outline: none; transition: all 0.3s ease; -webkit-appearance: none;
-        }
+        input, select { font-family: inherit; font-weight: 500; width: 100%; padding: 14px 15px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; outline: none; transition: all 0.3s ease; -webkit-appearance: none; }
         input:focus, select:focus { border-color: var(--em-red); box-shadow: 0 0 0 3px var(--em-red-glow); }
 
         .search-container { position: relative; margin-bottom: 6px; }
@@ -127,15 +196,7 @@
         .clear-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); font-size: 24px; line-height: 1; cursor: pointer; padding: 0; display: none; }
         .clear-btn:active { color: var(--em-red-light); }
 
-        .sublot-offsite-note {
-            font-size: 0.65rem;
-            color: #94a3b8;
-            margin-top: -5px;
-            margin-bottom: 15px;
-            line-height: 1.3;
-            letter-spacing: 0.2px;
-            text-align: center;
-        }
+        .sublot-offsite-note { font-size: 0.65rem; color: #94a3b8; margin-top: -5px; margin-bottom: 15px; line-height: 1.3; letter-spacing: 0.2px; text-align: center; }
 
         .results-dropdown { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: var(--asphalt-light); border: 1px solid var(--border-color); border-radius: 10px; max-height: 220px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .result-item { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-size: 0.95rem; color: var(--text-main); transition: background 0.2s;}
@@ -184,32 +245,16 @@
         .total span:last-child { color: var(--em-red-light); font-size: 1.6rem; letter-spacing: -0.5px; text-shadow: 0 0 10px var(--em-red-glow); }
 
         /* КОРЕГУВАННЯ */
-        .correction-btn {
-            width: 100%; background: rgba(255,255,255,0.05); color: var(--text-muted);
-            border: 1px dashed var(--border-color); border-radius: 10px; padding: 10px;
-            font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;
-            margin-top: 15px; display: block;
-        }
+        .correction-btn { width: 100%; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px dashed var(--border-color); border-radius: 10px; padding: 10px; font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; margin-top: 15px; display: block; }
         .correction-btn:hover { background: rgba(255,255,255,0.1); color: var(--text-main); }
-        .correction-btn.active-overrides {
-            background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.4); color: #4ade80;
-        }
-        .correction-menu {
-            background: rgba(15, 23, 42, 0.95); border: 1px solid var(--copart-blue);
-            border-radius: 12px; padding: 15px; margin-top: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: none;
-        }
+        .correction-btn.active-overrides { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.4); color: #4ade80; }
+        .correction-menu { background: rgba(15, 23, 42, 0.95); border: 1px solid var(--copart-blue); border-radius: 12px; padding: 15px; margin-top: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: none; }
         .corr-title { font-size: 0.8rem; font-weight: 700; color: var(--copart-blue); text-transform: uppercase; margin-bottom: 15px; text-align: center; }
         .corr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .corr-grid div { display: flex; flex-direction: column; }
         .corr-grid label { font-size: 0.6rem; margin-bottom: 4px; color: #cbd5e1; }
         .corr-grid input { padding: 8px; font-size: 0.9rem; text-align: center; background: rgba(0,0,0,0.5); margin-bottom: 0; font-weight: 600;}
-        .corr-ok-btn {
-            width: 100%; background: var(--copart-blue); color: white; border: none;
-            padding: 10px; border-radius: 8px; font-weight: 700; margin-top: 15px; cursor: pointer;
-            text-transform: uppercase; transition: 0.3s; font-family: inherit;
-        }
+        .corr-ok-btn { width: 100%; background: var(--copart-blue); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; margin-top: 15px; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-family: inherit; }
         .corr-ok-btn:hover { background: #2563eb; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
 
         .extra-fees-block { background: rgba(59, 130, 246, 0.05); border: 1px dashed rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 12px 20px; margin-top: 15px; position: relative; }
@@ -240,265 +285,414 @@
     </style>
 </head>
 <body>
-<div class="card">
+
+<div class="main-wrapper">
     
-    <div id="dealerModal" class="dealer-modal">
-        <label>Enter Dealer Password</label>
-        <input type="password" id="dealerPin" maxlength="3" pattern="\d*" placeholder="***">
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeDealerModal()">Cancel</button>
-            <button class="btn-ok" onclick="submitDealerModal()">OK</button>
-        </div>
+    <!-- НОВИЙ БЛОК: ІНТЕРАКТИВНА КАРТА -->
+    <div class="map-container">
+        <div class="map-overlay-title">LOGISTIC <span>ROUTE</span></div>
+        <div id="map"></div>
     </div>
 
-    <div class="partners-row">
-        <a href="https://bid.cars/ua/" target="_blank" class="partner-link logo-bidcars">BID<span>CARS</span></a>
-        <a href="https://www.copart.com/lotSearchResults?free=true&query=&qId=7ca33fe5-d792-427a-ad47-ae642e814bd2-1773050327211&index=undefined" target="_blank" class="partner-link logo-copart">Copart</a>
-        <a href="https://www.iaai.com/Search?url=NwI3m7rnm%2b6h5MSWsgeAQnskvqZz3s5Pm1GZsHlc68o%3d" target="_blank" class="partner-link logo-iaa">IAA</a>
-        <a href="https://ca.iaai.com/search" target="_blank" class="partner-link logo-impact">IMPACT</a>
-    </div>
-
-    <div class="brand-header">
-        <div class="logo-box">
-            <div class="brand-em">EM</div>
-            <div class="brand-shipping">
-                <span>S</span><span>H</span><span>I</span><span>P</span><span>P</span><span>I</span><span>N</span><span>G</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Вкладки калькуляторів -->
-    <div class="calc-options">
-        <div class="mode-btn active" id="btnPublic" onclick="activatePublicMode()">LOGISTIC CALCULATOR</div>
-        <div class="mode-btn" id="btnDealer" onclick="openDealerModal()">DEALERS ONLY CALCULATOR</div>
-    </div>
-
-    <div id="dbStatus" class="status">Підключення до бази та НБУ...</div>
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: flex-end;">
-        <div style="width: 100%;">
-            <label>Тип авто</label>
-            <select id="type" onchange="triggerCalc()">
-                <option value="SUV">SUV</option>
-                <option value="Car">Sedan</option>
-                <option value="Pickup">Pickup</option>
-                <option value="Motorcycle">Moto</option>
-            </select>
-        </div>
-        <div style="width: 100%;">
-            <label>Рік випуску (шильдик)</label>
-            <select id="year" onchange="triggerCalc()"></select>
-        </div>
-    </div>
-    
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px;">
-        <label style="margin-bottom: 0;">Локація аукціону</label>
-        <div id="dynamicAucLogo" style="display: none; font-size: 1.1rem; opacity: 0.9; line-height: 1; text-align: right;"></div>
-    </div>
-    
-    <div class="search-container">
-        <input type="text" id="city" placeholder="Почніть вводити місто..." autocomplete="off">
-        <button type="button" id="clearBtn" class="clear-btn">&times;</button>
-        <div id="locList" class="results-dropdown"></div>
-    </div>
-
-    <div class="sublot-offsite-note">
-        Sublot та Offsite локації можуть тарифікуватися:<br>Sublot location 1 миля = 1 дол ; Offsite 1 миля = 1 дол
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: flex-end;">
-        <div style="width: 100%;">
-            <label id="volLabel">Двигун (см³)</label>
-            <input type="number" id="vol" value="2000" oninput="triggerCalc()">
-        </div>
-        <div style="width: 100%;">
-            <label>Пальне</label>
-            <select id="fuel" onchange="updateFuelLabel(); triggerCalc()"><option value="petrol">Бензин</option><option value="diesel">Дизель</option><option value="hybrid">Гібрид</option><option value="electric">Електро</option></select>
-        </div>
-    </div>
-
-    <label style="margin-bottom: 6px;">Місто отримання</label>
-    <select id="destination" onchange="triggerCalc()" style="margin-bottom: 20px;"></select>
-    
-    <div class="bid-total-row">
-        <div class="half-col">
-            <label>Ставка на аукціоні</label>
-            <div class="input-with-currency">
-                <input type="number" id="bid" placeholder="0" oninput="triggerCalc()">
-                <span class="currency-indicator">USD</span>
-            </div>
-        </div>
-        <div class="equals-sign">=</div>
-        <div class="half-col">
-            <label>Разом (бюджет)</label>
-            <div class="input-with-currency">
-                <input type="number" id="totalBudget" placeholder="0" oninput="reverseCalc()">
-                <span class="currency-indicator">USD</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="toggles-container">
-        <div class="toggle-row">
-            <span class="primary" style="flex:1;">Фірма (юр. особа)</span>
-            <label class="switch">
-                <input type="checkbox" id="toggleFirm" onchange="triggerCalc()">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="toggle-row">
-            <div class="labels">
-                <span class="primary">Документи:</span>
-                <span class="secondary">Bill of Sale, Parts Only, Certificate Of Destruction, та ін.</span>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="toggleBos" onchange="triggerCalc()">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="toggle-row">
-            <div class="labels">
-                <span class="primary">"Закриті" аукціони:</span>
-                <span class="secondary">Wisconsin, Michigan, Nevada, Utah, Alabama</span>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="toggleBidder" onchange="triggerCalc()">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="toggle-row">
-            <span class="primary" style="flex:1;">Страхування (1.5%)</span>
-            <label class="switch">
-                <input type="checkbox" id="toggleIns" onchange="triggerCalc()">
-                <span class="slider"></span>
-            </label>
-        </div>
-    </div>
-
-    <div class="results">
+    <!-- ІСНУЮЧИЙ КАЛЬКУЛЯТОР -->
+    <div class="card">
         
-        <div id="publicLines">
-            <div class="line"><span id="pubDeliveryLabel">Повна вартість з доставкою</span><span id="pubDeliveryRes">$0</span></div>
-
-            <div class="line orange-line" style="display:flex; justify-content:space-between;">
-                <span id="pubCustomsLabel">Митні платежі (МВ)</span><span id="pubCustomsRes">$0</span>
+        <div id="dealerModal" class="dealer-modal">
+            <label>Enter Dealer Password</label>
+            <input type="password" id="dealerPin" maxlength="3" pattern="\d*" placeholder="***">
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeDealerModal()">Cancel</button>
+                <button class="btn-ok" onclick="submitDealerModal()">OK</button>
             </div>
         </div>
 
-        <div id="dealerLines" style="display:none;">
-            <div class="line"><span>Вартість лоту</span><span id="resBid">$0</span></div>
-            <div class="line"><span>Аукціонний збір</span><span id="resFee">$0</span></div>
-            
-            <div class="line" id="dlrCanTaxLine" style="display:none; font-weight:600; color: #f8fafc;">
-                <span>Податок Канади (<span id="dlrCanTaxName"></span>)</span><span id="dlrCanTaxRes">$0</span>
-            </div>
-            <div class="line" id="dlrCanDocLine" style="display:none; font-weight:600; color: #f8fafc;"><span>Канадські документи</span><span id="dlrCanDocRes">$170</span></div>
+        <div class="partners-row">
+            <a href="https://bid.cars/ua/" target="_blank" class="partner-link logo-bidcars">BID<span>CARS</span></a>
+            <a href="https://www.copart.com/lotSearchResults?free=true&query=&qId=7ca33fe5-d792-427a-ad47-ae642e814bd2-1773050327211&index=undefined" target="_blank" class="partner-link logo-copart">Copart</a>
+            <a href="https://www.iaai.com/Search?url=NwI3m7rnm%2b6h5MSWsgeAQnskvqZz3s5Pm1GZsHlc68o%3d" target="_blank" class="partner-link logo-iaa">IAA</a>
+            <a href="https://ca.iaai.com/search" target="_blank" class="partner-link logo-impact">IMPACT</a>
+        </div>
 
-            <div class="line"><span>Трансфер (SWIFT)</span><span id="resSwift">$0</span></div>
-            <div class="line"><span>Логістика по Америці та морський фрахт</span><span id="resLandSea">$0</span></div>
-            <div class="line"><span id="complexLabel">Доставка</span><span id="resComplex">$0</span></div>
-            
-            <div class="line" id="lineEvSurcharge" style="display:none; font-weight:600; color: var(--em-red-light);"><span style="color:var(--em-red-light)">EV Surcharge</span><span id="resEvSurcharge" style="color:var(--em-red-light)">$0</span></div>
-            
-            <div class="line" id="dlrFirmLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Юр. особа</span><span id="dlrFirmRes" style="color:var(--copart-blue)">$60</span></div>
-            <div class="line" id="dlrBosLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Документи (Bill of Sale)</span><span id="dlrBosRes" style="color:var(--copart-blue)">$450</span></div>
-            <div class="line" id="dlrBidderLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Bidder (Закриті аукціони)</span><span id="dlrBidderRes" style="color:var(--copart-blue)">$300</span></div>
-            <div class="line" id="dlrInsLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Страхування</span><span id="dlrInsRes" style="color:var(--copart-blue)">$0</span></div>
-
-            <div class="customs-block">
-                <div class="customs-header">
-                    <span id="customsTitle">Митні платежі (МВ)</span>
-                    <span id="resCustomsTotal">$0</span>
-                </div>
-                <div class="sub-line"><span>├ Ввізне мито (10%)</span><span id="resDuty">$0</span></div>
-                <div class="sub-line"><span>├ Акцизний збір</span><span id="resExcise">$0</span></div>
-                <div class="sub-line"><span id="vatLabel">├ ПДВ (20%)</span><span id="resVat">$0</span></div>
-                <div class="sub-line">
-                    <span style="color:#64748b">└ Курс НБУ на сьогодні</span>
-                    <span class="rate-text" id="resRates">-</span>
+        <div class="brand-header">
+            <div class="logo-box">
+                <div class="brand-em">EM</div>
+                <div class="brand-shipping">
+                    <span>S</span><span>H</span><span>I</span><span>P</span><span>P</span><span>I</span><span>N</span><span>G</span>
                 </div>
             </div>
         </div>
 
-        <div class="line" id="taxRefundLine" style="display:none; align-items: center; padding: 12px 0 0 0; font-size: 0.75rem; color: var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); border-bottom: none; margin-top: 10px;">
-            <span>Орієнтовне повернення TAX</span><span id="resTaxRefund" style="font-weight: 600; color: #cbd5e1; font-size: 1rem;">$0</span>
+        <div class="calc-options">
+            <div class="mode-btn active" id="btnPublic" onclick="activatePublicMode()">LOGISTIC CALCULATOR</div>
+            <div class="mode-btn" id="btnDealer" onclick="openDealerModal()">DEALERS ONLY CALCULATOR</div>
         </div>
 
-        <div class="total"><span>РАЗОМ:</span><span id="resTotal">$0</span></div>
-
-        <!-- ІНСТРУМЕНТ КОРЕГУВАННЯ -->
-        <div id="correctionBlock" style="display:none; width: 100%;">
-            <button id="correctionBtn" class="correction-btn" onclick="toggleCorrectionMenu()">Корегування ⚙️</button>
-            <div id="correctionMenu" class="correction-menu">
-                <div class="corr-title">Внести зміни</div>
-                <div class="corr-grid">
-                    <div>
-                        <label>Трансфер (SWIFT)</label>
-                        <input type="number" id="corrSwift" placeholder="0">
-                    </div>
-                    <div>
-                        <label>Суша по США/Канаді</label>
-                        <input type="number" id="corrLand" placeholder="0">
-                    </div>
-                    <div>
-                        <label>Морський фрахт</label>
-                        <input type="number" id="corrSea" placeholder="0">
-                    </div>
-                    <div>
-                        <label>Доставка</label>
-                        <input type="number" id="corrCpx" placeholder="0">
-                    </div>
-                </div>
-                <button class="corr-ok-btn" onclick="applyCorrections()">ОК</button>
+        <div id="dbStatus" class="status">Підключення до бази та НБУ...</div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: flex-end;">
+            <div style="width: 100%;">
+                <label>Тип авто</label>
+                <select id="type" onchange="triggerCalc()">
+                    <option value="SUV">SUV</option>
+                    <option value="Car">Sedan</option>
+                    <option value="Pickup">Pickup</option>
+                    <option value="Motorcycle">Moto</option>
+                </select>
             </div>
-        </div>
-
-        <div class="extra-fees-block">
-            <span class="not-included-tag">(! не входить у вартість)</span>
-            <div class="info-line">
-                <span>Орієнтовний перший облік (ПФУ+МРЕВ)</span>
-                <span id="resPfInfo">$0</span>
-            </div>
-            <div class="info-line">
-                <span>Сертифікація</span>
-                <span id="resCertInfo">$0</span>
-            </div>
-            <div class="info-line">
-                <span>Сервіс в МВС</span>
-                <span id="resMvsInfo">$0</span>
+            <div style="width: 100%;">
+                <label>Рік випуску (шильдик)</label>
+                <select id="year" onchange="triggerCalc()"></select>
             </div>
         </div>
         
-        <div class="timeline" id="timelineUI" style="display:none;">
-            <div class="tl-step"><span class="tl-icon" id="flagStart">🇺🇸</span><span class="tl-text" id="tlStart">Port</span></div>
-            <div class="tl-line line-ship"></div>
-            <div class="tl-step"><span class="tl-icon" id="flagEU">🇱🇹</span><span class="tl-text" id="tlEU">Klaipeda</span></div>
-            <div class="tl-line line-truck" id="euToUaLine"></div>
-            <div class="tl-step"><span class="tl-icon" id="flagUA">🇺🇦</span><span class="tl-text" id="tlDest">Львів</span></div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px;">
+            <label style="margin-bottom: 0;">Локація аукціону</label>
+            <div id="dynamicAucLogo" style="display: none; font-size: 1.1rem; opacity: 0.9; line-height: 1; text-align: right;"></div>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" id="city" placeholder="Почніть вводити місто..." autocomplete="off">
+            <button type="button" id="clearBtn" class="clear-btn">&times;</button>
+            <div id="locList" class="results-dropdown"></div>
         </div>
 
-        <div class="converter-block">
-            <div class="converter-title">Конвертер валют (Актуально НБУ)</div>
-            <div class="converter-grid">
-                <div>
-                    <label>Долар (USD)</label>
-                    <input type="number" id="convUsd" placeholder="0" oninput="convertCurrency('USD')">
+        <div class="sublot-offsite-note">
+            Sublot та Offsite локації можуть тарифікуватися:<br>Sublot location 1 миля = 1 дол ; Offsite 1 миля = 1 дол
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: flex-end;">
+            <div style="width: 100%;">
+                <label id="volLabel">Двигун (см³)</label>
+                <input type="number" id="vol" value="2000" oninput="triggerCalc()">
+            </div>
+            <div style="width: 100%;">
+                <label>Пальне</label>
+                <select id="fuel" onchange="updateFuelLabel(); triggerCalc()"><option value="petrol">Бензин</option><option value="diesel">Дизель</option><option value="hybrid">Гібрид</option><option value="electric">Електро</option></select>
+            </div>
+        </div>
+
+        <label style="margin-bottom: 6px;">Місто отримання</label>
+        <select id="destination" onchange="triggerCalc()" style="margin-bottom: 20px;"></select>
+        
+        <div class="bid-total-row">
+            <div class="half-col">
+                <label>Ставка на аукціоні</label>
+                <div class="input-with-currency">
+                    <input type="number" id="bid" placeholder="0" oninput="triggerCalc()">
+                    <span class="currency-indicator">USD</span>
                 </div>
-                <div>
-                    <label>Канадський (CAD)</label>
-                    <input type="number" id="convCad" placeholder="0" oninput="convertCurrency('CAD')">
-                </div>
-                <div>
-                    <label>Гривня (UAH)</label>
-                    <input type="number" id="convUah" placeholder="0" oninput="convertCurrency('UAH')">
+            </div>
+            <div class="equals-sign">=</div>
+            <div class="half-col">
+                <label>Разом (бюджет)</label>
+                <div class="input-with-currency">
+                    <input type="number" id="totalBudget" placeholder="0" oninput="reverseCalc()">
+                    <span class="currency-indicator">USD</span>
                 </div>
             </div>
         </div>
 
+        <div class="toggles-container">
+            <div class="toggle-row">
+                <span class="primary" style="flex:1;">Фірма (юр. особа)</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggleFirm" onchange="triggerCalc()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="labels">
+                    <span class="primary">Документи:</span>
+                    <span class="secondary">Bill of Sale, Parts Only, Certificate Of Destruction, та ін.</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="toggleBos" onchange="triggerCalc()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="labels">
+                    <span class="primary">"Закриті" аукціони:</span>
+                    <span class="secondary">Wisconsin, Michigan, Nevada, Utah, Alabama</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="toggleBidder" onchange="triggerCalc()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <span class="primary" style="flex:1;">Страхування (1.5%)</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggleIns" onchange="triggerCalc()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="results">
+            
+            <div id="publicLines">
+                <div class="line"><span id="pubDeliveryLabel">Повна вартість з доставкою</span><span id="pubDeliveryRes">$0</span></div>
+
+                <div class="line orange-line" style="display:flex; justify-content:space-between;">
+                    <span id="pubCustomsLabel">Митні платежі (МВ)</span><span id="pubCustomsRes">$0</span>
+                </div>
+            </div>
+
+            <div id="dealerLines" style="display:none;">
+                <div class="line"><span>Вартість лоту</span><span id="resBid">$0</span></div>
+                <div class="line"><span>Аукціонний збір</span><span id="resFee">$0</span></div>
+                
+                <div class="line" id="dlrCanTaxLine" style="display:none; font-weight:600; color: #f8fafc;">
+                    <span>Податок Канади (<span id="dlrCanTaxName"></span>)</span><span id="dlrCanTaxRes">$0</span>
+                </div>
+                <div class="line" id="dlrCanDocLine" style="display:none; font-weight:600; color: #f8fafc;"><span>Канадські документи</span><span id="dlrCanDocRes">$170</span></div>
+
+                <div class="line"><span>Трансфер (SWIFT)</span><span id="resSwift">$0</span></div>
+                <div class="line"><span>Логістика по Америці, та Морський фрахт</span><span id="resLandSea">$0</span></div>
+                <div class="line"><span id="complexLabel">Комплекс / Доставка</span><span id="resComplex">$0</span></div>
+                
+                <div class="line" id="lineEvSurcharge" style="display:none; font-weight:600; color: var(--em-red-light);"><span style="color:var(--em-red-light)">EV Surcharge</span><span id="resEvSurcharge" style="color:var(--em-red-light)">$0</span></div>
+                
+                <div class="line" id="dlrFirmLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Юр. особа</span><span id="dlrFirmRes" style="color:var(--copart-blue)">$60</span></div>
+                <div class="line" id="dlrBosLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Документи (Bill of Sale)</span><span id="dlrBosRes" style="color:var(--copart-blue)">$450</span></div>
+                <div class="line" id="dlrBidderLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Bidder (Закриті аукціони)</span><span id="dlrBidderRes" style="color:var(--copart-blue)">$300</span></div>
+                <div class="line" id="dlrInsLine" style="display:none; font-weight:600; color: var(--copart-blue);"><span style="color:var(--copart-blue)">Страхування</span><span id="dlrInsRes" style="color:var(--copart-blue)">$0</span></div>
+
+                <div class="customs-block">
+                    <div class="customs-header">
+                        <span id="customsTitle">Митні платежі (МВ)</span>
+                        <span id="resCustomsTotal">$0</span>
+                    </div>
+                    <div class="sub-line"><span>├ Ввізне мито (10%)</span><span id="resDuty">$0</span></div>
+                    <div class="sub-line"><span>├ Акцизний збір</span><span id="resExcise">$0</span></div>
+                    <div class="sub-line"><span id="vatLabel">├ ПДВ (20%)</span><span id="resVat">$0</span></div>
+                    <div class="sub-line">
+                        <span style="color:#64748b">└ Курс НБУ на сьогодні</span>
+                        <span class="rate-text" id="resRates">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="line" id="taxRefundLine" style="display:none; align-items: center; padding: 12px 0 0 0; font-size: 0.75rem; color: var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); border-bottom: none; margin-top: 10px;">
+                <span>Орієнтовне повернення TAX</span><span id="resTaxRefund" style="font-weight: 600; color: #cbd5e1; font-size: 1rem;">$0</span>
+            </div>
+
+            <div class="total"><span>РАЗОМ:</span><span id="resTotal">$0</span></div>
+
+            <!-- ІНСТРУМЕНТ КОРЕГУВАННЯ -->
+            <div id="correctionBlock" style="display:none; width: 100%;">
+                <button id="correctionBtn" class="correction-btn" onclick="toggleCorrectionMenu()">Корегування ⚙️</button>
+                <div id="correctionMenu" class="correction-menu">
+                    <div class="corr-title">Внести зміни</div>
+                    <div class="corr-grid">
+                        <div>
+                            <label>Трансфер (SWIFT)</label>
+                            <input type="number" id="corrSwift" placeholder="0">
+                        </div>
+                        <div>
+                            <label>Суша по США/Канаді</label>
+                            <input type="number" id="corrLand" placeholder="0">
+                        </div>
+                        <div>
+                            <label>Морський фрахт</label>
+                            <input type="number" id="corrSea" placeholder="0">
+                        </div>
+                        <div>
+                            <label>Комплекс / Доставка</label>
+                            <input type="number" id="corrCpx" placeholder="0">
+                        </div>
+                    </div>
+                    <button class="corr-ok-btn" onclick="applyCorrections()">ОК</button>
+                </div>
+            </div>
+
+            <div class="extra-fees-block">
+                <span class="not-included-tag">(! не входить у вартість)</span>
+                <div class="info-line">
+                    <span>Орієнтовний перший облік (ПФУ+МРЕВ)</span>
+                    <span id="resPfInfo">$0</span>
+                </div>
+                <div class="info-line">
+                    <span>Сертифікація</span>
+                    <span id="resCertInfo">$0</span>
+                </div>
+                <div class="info-line">
+                    <span>Сервіс в МВС</span>
+                    <span id="resMvsInfo">$0</span>
+                </div>
+            </div>
+            
+            <div class="timeline" id="timelineUI" style="display:none;">
+                <div class="tl-step"><span class="tl-icon" id="flagStart">🇺🇸</span><span class="tl-text" id="tlStart">Port</span></div>
+                <div class="tl-line line-ship"></div>
+                <div class="tl-step"><span class="tl-icon" id="flagEU">🇱🇹</span><span class="tl-text" id="tlEU">Klaipeda</span></div>
+                <div class="tl-line line-truck" id="euToUaLine"></div>
+                <div class="tl-step"><span class="tl-icon" id="flagUA">🇺🇦</span><span class="tl-text" id="tlDest">Львів</span></div>
+            </div>
+
+            <div class="converter-block">
+                <div class="converter-title">Конвертер валют (Актуально НБУ)</div>
+                <div class="converter-grid">
+                    <div>
+                        <label>Долар (USD)</label>
+                        <input type="number" id="convUsd" placeholder="0" oninput="convertCurrency('USD')">
+                    </div>
+                    <div>
+                        <label>Канадський (CAD)</label>
+                        <input type="number" id="convCad" placeholder="0" oninput="convertCurrency('CAD')">
+                    </div>
+                    <div>
+                        <label>Гривня (UAH)</label>
+                        <input type="number" id="convUah" placeholder="0" oninput="convertCurrency('UAH')">
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
 <script>
+    // --- ЛОГІКА МАПИ ---
+    let map;
+    let routeLayer;
+    let markersLayer;
+    let statePolygonLayer;
+
+    // Координати штатів і провінцій (для точки старту)
+    const stateCoords = {
+        "Alabama": [32.3182, -86.9023], "Alaska": [61.3707, -152.4044], "Arizona": [33.7298, -111.4312], "Arkansas": [34.9697, -92.3731],
+        "California": [36.1162, -119.6816], "Colorado": [39.0598, -105.3111], "Connecticut": [41.5978, -72.7554], "Delaware": [39.3185, -75.5071],
+        "Florida": [27.7663, -81.6868], "Georgia": [33.0406, -83.6431], "Hawaii": [21.0943, -157.4983], "Idaho": [44.2405, -114.4788],
+        "Illinois": [40.3495, -88.9861], "Indiana": [39.8494, -86.2583], "Iowa": [42.0115, -93.2105], "Kansas": [38.5266, -96.7265],
+        "Kentucky": [37.6681, -84.6701], "Louisiana": [31.1695, -91.8678], "Maine": [44.6939, -69.3819], "Maryland": [39.0639, -76.8021],
+        "Massachusetts": [42.2302, -71.5301], "Michigan": [43.3266, -84.5361], "Minnesota": [45.6945, -93.9002], "Mississippi": [32.7416, -89.6787],
+        "Missouri": [38.4561, -92.2884], "Montana": [46.9219, -110.4544], "Nebraska": [41.1254, -98.2681], "Nevada": [38.3135, -117.0554],
+        "New Hampshire": [43.4525, -71.5639], "New Jersey": [40.2989, -74.5210], "New Mexico": [34.8405, -106.2485], "New York": [42.1657, -74.9481],
+        "North Carolina": [35.6301, -79.8064], "North Dakota": [47.5289, -99.7840], "Ohio": [40.3888, -82.7649], "Oklahoma": [35.5653, -96.9289],
+        "Oregon": [44.5720, -122.0709], "Pennsylvania": [40.5908, -77.2098], "Rhode Island": [41.6809, -71.5118], "South Carolina": [33.8569, -80.9450],
+        "South Dakota": [44.2998, -99.4388], "Tennessee": [35.7478, -86.6923], "Texas": [31.0545, -97.5635], "Utah": [40.1500, -111.8624],
+        "Vermont": [44.0459, -72.7107], "Virginia": [37.7693, -78.1700], "Washington": [47.4009, -121.4905], "West Virginia": [38.4912, -80.9545],
+        "Wisconsin": [44.2685, -89.6165], "Wyoming": [42.7560, -107.3025],
+        "Alberta": [53.9333, -116.5765], "British Columbia": [53.7267, -127.6476], "Manitoba": [53.7609, -98.8139], "New Brunswick": [46.5653, -66.4619],
+        "Newfoundland and Lab": [53.1355, -57.6604], "Nova Scotia": [44.6820, -63.7443], "Ontario": [51.2538, -85.3232], "Quebec": [52.9399, -73.5491]
+    };
+
+    // Координати портів відправки
+    const portCoords = {
+        "New York": [40.7128, -74.0060],
+        "Newark": [40.7357, -74.1724],
+        "Norfolk": [36.8508, -76.2859],
+        "Savannah": [32.0809, -81.0912],
+        "Miami": [25.7617, -80.1918],
+        "Houston": [29.7604, -95.3698],
+        "Chicago": [41.8781, -87.6298],
+        "Los Angeles": [34.0522, -118.2437],
+        "Seattle": [47.6062, -122.3321],
+        "Toronto": [43.6510, -79.3470],
+        "Honolulu": [21.3069, -157.8583],
+        "Anchorage": [61.2181, -149.9003]
+    };
+
+    function initMap() {
+        // Центруємо на Північну Америку
+        map = L.map('map', {zoomControl: false}).setView([39.8283, -98.5795], 4);
+        
+        // Найстабільніша векторна базова карта від Esri (Dark Gray)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri',
+            maxZoom: 16
+        }).addTo(map);
+
+        statePolygonLayer = L.layerGroup().addTo(map);
+        routeLayer = L.layerGroup().addTo(map);
+        markersLayer = L.layerGroup().addTo(map);
+        
+        // Фікс для flexbox
+        setTimeout(() => { map.invalidateSize(); }, 500);
+        window.addEventListener('resize', () => {
+            if(map) map.invalidateSize();
+        });
+    }
+
+    function resetMap() {
+        if (!map) return;
+        routeLayer.clearLayers();
+        markersLayer.clearLayers();
+        statePolygonLayer.clearLayers();
+        map.invalidateSize();
+        map.flyTo([39.8283, -98.5795], 4, {duration: 1.5});
+    }
+
+    async function highlightState(stateName) {
+        statePolygonLayer.clearLayers();
+        
+        let country = "USA";
+        const canadaProvinces = ["Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Lab", "Nova Scotia", "Ontario", "Quebec"];
+        if (canadaProvinces.includes(stateName)) country = "Canada";
+        
+        let queryState = stateName;
+        if (queryState === "Newfoundland and Lab") queryState = "Newfoundland and Labrador";
+        
+        try {
+            // Витягуємо векторний контур штату через Nominatim API
+            const res = await fetch(`https://nominatim.openstreetmap.org/search.php?state=${encodeURIComponent(queryState)}&country=${country}&polygon_geojson=1&format=json`);
+            const data = await res.json();
+            if (data && data.length > 0 && data[0].geojson) {
+                L.geoJSON(data[0].geojson, {
+                    style: { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.15 }
+                }).addTo(statePolygonLayer);
+            }
+        } catch (e) {
+            console.log("Could not highlight state", e);
+        }
+    }
+
+    function drawRoute(locName, portName) {
+        if (!map) return;
+        map.invalidateSize();
+        routeLayer.clearLayers();
+        markersLayer.clearLayers();
+
+        // Витягуємо назву штату з рядка (напр., "ABILENE - Texas - Copart" -> "Texas")
+        const parts = locName.split('-');
+        let stateName = parts.length >= 2 ? parts[1].trim() : null;
+        
+        // Для кастомних назв як "Dyer Auto Auction - Indiana - Dyer Auto Auction"
+        if (stateName && !stateCoords[stateName] && parts.length >= 3) {
+            stateName = parts[2].trim();
+        }
+
+        const stateCoord = stateCoords[stateName];
+        const portCoord = portCoords[portName];
+
+        if (stateName) {
+            highlightState(stateName);
+        }
+
+        if (stateCoord && portCoord) {
+            const stateIcon = L.divIcon({className: 'map-marker-state', html: '<div class="dot red"></div>'});
+            const portIcon = L.divIcon({className: 'map-marker-port', html: '<div class="dot blue"></div>'});
+
+            L.marker(stateCoord, {icon: stateIcon}).addTo(markersLayer).bindPopup(`<div style="text-align:center;"><b>Штат аукціону:</b><br>${stateName}</div>`);
+            L.marker(portCoord, {icon: portIcon}).addTo(markersLayer).bindPopup(`<div style="text-align:center;"><b>Порт відправки:</b><br>${portName}</div>`);
+
+            const latlngs = [stateCoord, portCoord];
+            const polyline = L.polyline(latlngs, {color: '#ef4444', dashArray: '10, 10', weight: 3, opacity: 0.8, className: 'animated-route'}).addTo(routeLayer);
+
+            // Плавно масштабуємо карту, щоб показати обидві точки з відступами
+            map.flyToBounds(polyline.getBounds(), {padding: [50, 50], maxZoom: 6, duration: 1.5});
+        } else if (portCoord) {
+            // Якщо координати штату не знайдені, показуємо хоча б порт
+            const portIcon = L.divIcon({className: 'map-marker-port', html: '<div class="dot blue"></div>'});
+            L.marker(portCoord, {icon: portIcon}).addTo(markersLayer).bindPopup(`<div style="text-align:center;"><b>Порт відправки:</b><br>${portName}</div>`);
+            map.flyTo(portCoord, 5, {duration: 1.5});
+        }
+    }
+
+
+    // --- ЛОГІКА КАЛЬКУЛЯТОРА ---
     // Відстань Левенштейна для нечіткого пошуку локацій
     function getEditDistance(a, b) {
         if(a.length === 0) return b.length;
@@ -643,6 +837,9 @@
     }
 
     window.onload = () => {
+        // Ініціалізація карти
+        initMap();
+
         const yearSelect = document.getElementById('year');
         const currentYear = new Date().getFullYear();
         for (let y = currentYear; y >= 2000; y--) {
@@ -681,7 +878,6 @@
 
             let matched = keys.filter(k => k.toUpperCase().includes(query));
 
-            // Нечіткий пошук (Fuzzy Search)
             if (matched.length === 0 && query.length >= 2) {
                 let scored = keys.map(k => {
                     let kWords = k.toUpperCase().split(/[\s-]+/);
@@ -732,6 +928,7 @@
             document.getElementById('dlrCanDocLine').style.display = 'none';
             document.getElementById('taxRefundLine').style.display = 'none';
             cityInput.focus();
+            resetMap(); // Очищаємо маршрут на карті
         });
 
         document.addEventListener('click', (e) => {
@@ -746,6 +943,7 @@
         
         if (!loc) { 
             dynLogo.style.display = 'none'; 
+            resetMap();
             return; 
         }
         
@@ -759,12 +957,11 @@
             dynLogo.innerHTML = '<span class="logo-iaa">IAA</span>'; 
         }
         
-        // Лише напрямок Klaipeda
         const dest = document.getElementById('destination');
         dest.innerHTML = '';
-        const opt = document.createElement('option');
+        let opt = document.createElement('option');
         opt.value = 1200;
-        opt.text = "KLAIPEDA - Зимна Вода (Львів обл.) ($1200)";
+        opt.text = "KLAIPEDA Зимна Вода Львів обл. ($1200)";
         dest.appendChild(opt);
 
         triggerCalc();
@@ -849,7 +1046,7 @@
         const isFirm = document.getElementById('toggleFirm').checked;
         const firmFee = isFirm ? 60 : 0;
         const isBos = document.getElementById('toggleBos').checked;
-        const bosFee = isBos ? 450 : 0; 
+        const bosFee = isBos ? 450 : 0;
         const isBidder = document.getElementById('toggleBidder').checked;
         const bidderFee = isBidder ? 300 : 0;
         const isIns = document.getElementById('toggleIns').checked;
@@ -880,7 +1077,7 @@
         const origCpx = cpx;
         if (currentMode === 'dealer' && corrCpx !== "") cpx = parseFloat(corrCpx);
 
-        // БЕЗПЕЧНА ПЕРЕВІРКА ЛОКАЦІЇ (Fuzzy-результат)
+        // БЕЗПЕЧНА ПЕРЕВІРКА ЛОКАЦІЇ
         let exactCity = Object.keys(db.copart).find(k => k === city) || 
                         Object.keys(db.iaai).find(k => k === city) || 
                         (db.canada && Object.keys(db.canada).find(k => k === city));
@@ -890,7 +1087,6 @@
         const loc = db.copart[exactCity] || db.iaai[exactCity] || (db.canada && db.canada[exactCity]);
         if (!loc) return null;
         
-        // Знаходимо seaRates безпечно (уникаємо помилки TypeError, якщо порт не знайдено)
         const seaRatesDB = typeof seaRates !== 'undefined' ? seaRates : {};
         const s = seaRatesDB[loc.port] || { end: "Gdansk", Car: 0, SUV: 0, Pickup: 0, Motorcycle: 0 };
         
@@ -999,7 +1195,7 @@
             dlrTotal, pubTotal, pubDeliverySum, isCanada, isFirm, isBos, isBidder, isIns,
             origSw, origLand, origSea, origCpx,
             firstRegUah, firstRegUsd, certUah, certUsd, mvsUah, mvsUsd,
-            destNameShort, timelineCity, loc, actualEuPort
+            destNameShort, timelineCity, loc, actualEuPort, exactCity
         };
     }
 
@@ -1039,7 +1235,7 @@
             document.getElementById('publicLines').style.display = 'none';
             document.getElementById('correctionBlock').style.display = 'block';
             
-            document.getElementById('complexLabel').innerText = m.destNameShort ? `Доставка (${m.destNameShort})` : `Доставка`;
+            document.getElementById('complexLabel').innerText = m.destNameShort ? `Комплекс / Доставка (${m.destNameShort})` : `Комплекс / Доставка`;
             
             const t = document.getElementById('type').value;
             document.getElementById('customsTitle').innerHTML = (t === 'Pickup') ? `${baseCustomsText} <span style="color:var(--em-red-light); font-size:0.85em; font-weight:800; text-transform:lowercase;">(!орієнтовно)</span>` : baseCustomsText;
@@ -1124,6 +1320,11 @@
 
         const euToUaLine = document.getElementById('euToUaLine');
         euToUaLine.className = 'tl-line line-truck';
+
+        // Відмальовуємо маршрут на карті
+        if (!isReverse) {
+            drawRoute(m.exactCity, m.loc.port);
+        }
     }
 </script>
 </body>
