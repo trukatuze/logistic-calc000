@@ -1102,7 +1102,7 @@
         let land = origLand;
         if (currentMode === 'dealer' && corrLand !== "") land = parseFloat(corrLand);
 
-        const origSea = s[t] || s["Car"] || 0;
+        let origSea = (s[t] || s["Car"] || 0) + 70; // Тимчасова націнка +$70
         let sea = origSea;
         if (currentMode === 'dealer' && corrSea !== "") sea = parseFloat(corrSea);
         
